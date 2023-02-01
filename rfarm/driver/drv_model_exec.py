@@ -406,8 +406,12 @@ class RFarmModel:
                 # Define time idx max
                 time_idx_max = int(self.nat / self.ratio_t)
 
+                # Get alert area index
+                subdomain_mask = deepcopy(domain_mask)
+                subdomain_shape = subdomain_mask.shape
+
                 # Iterate over time idx
-                ensemble_rf_t = np.zeros([self.ns * self.ns, self.nat])
+                ensemble_rf_t = np.zeros([subdomain_shape[0] * subdomain_shape[1], self.nat])
                 for time_idx_step in range(0, time_idx_max):
 
                     time_idx_start = time_idx_step * self.ratio_t
@@ -422,8 +426,6 @@ class RFarmModel:
 
                         assert(area_tag == slope_tag)
 
-                        # Get alert area index
-                        subdomain_mask = deepcopy(domain_mask)
                         subdomain_idx = np.argwhere(subdomain_mask.ravel() == area_id)
 
                         rain_avg = slope_fields['rain_average'][time_idx_step]
@@ -450,7 +452,8 @@ class RFarmModel:
                             nx=self.ns, ny=self.ns, nt=nat)
 
                         # Post-process result(s)
-                        ensemble_rf_step = np.reshape(ensemble_rf_xyt, [self.ns * self.ns, self.ratio_t])
+                        ensemble_rf_tmp = ensemble_rf_xyt[0:subdomain_shape[0], 0:subdomain_shape[1], :]
+                        ensemble_rf_step = np.reshape(ensemble_rf_tmp, [subdomain_shape[0] * subdomain_shape[1], self.ratio_t])
 
                         # Compute mean and weight(s)
                         ensemble_rf_avg = np.nanmean(ensemble_rf_step[subdomain_idx, :])
@@ -467,11 +470,11 @@ class RFarmModel:
                                         ' -- IdxMax: ' + str(time_idx_end) + ' ... DONE')
 
                 # Reshape results in XYT format
-                ensemble_rf = np.reshape(ensemble_rf_t, [self.ns, self.ns, self.nat])
+                ensemble_rf = np.reshape(ensemble_rf_t, [subdomain_shape[0], subdomain_shape[1], self.nat])
 
                 # Debug
                 # plt.figure(1)
-                # plt.imshow(ensemble_rf[:, :, 23])
+                # plt.imshow(ensemble_rf[:, :, 0])
                 # plt.colorbar()
                 # plt.show()
 

@@ -180,7 +180,7 @@ def read_file_settings(file_name_settings):
         with open(file_name_settings) as file_handle:
             data_settings = json.load(file_handle)
     else:
-        logging.error(' ===> Error in reading algorithm settings file')
+        logging.error(' ===> Error in reading algorithm settings file "' + file_name_settings + '"')
         raise IOError('File not found')
     return data_settings
 # -------------------------------------------------------------------------------------

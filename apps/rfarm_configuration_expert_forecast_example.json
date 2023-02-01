@@ -49,21 +49,21 @@
       "land": {
         "terrain_data": {
           "filename": "marche.dem.txt",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_static/gridded/"
+          "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_static/gridded/"
         },
         "alert_area_data": {
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_static/gridded/",
+          "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_static/gridded/",
           "filename": "marche.alertarea_2017.txt"
         },
         "grid_data": {
           "filename": "rfarm_expert_forecast_grid.workspace",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_static/ancillary/rfarm/expert_forecast/"
+          "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_static/ancillary/rfarm/expert_forecast/"
         }
       },
       "colormap": {
         "rain_colormap" : {
           "filename": null,
-          "folder" : "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_static/colormap/"
+          "folder" : "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_static/colormap/"
         }
       }
     },
@@ -85,31 +85,31 @@
       "input": {
         "rain_input_data": {
           "filename": "ef.rain.{datetime_input}_{domain}.csv",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_dynamic/outcome/expert_forecast/{sub_path_time}/"
+          "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_dynamic/destination/expert_forecast/{sub_path_time}/"
         },
         "rain_input_ancillary" : {
           "filename" : "expert_forecast_precipitation_{datetime_input}.workspace",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_dynamic/ancillary/rfarm/expert_forecast/{sub_path_time}/"
+          "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_dynamic/ancillary/rfarm/expert_forecast/{sub_path_time}/"
         }
       },
       "outcome": {
         "rain_outcome_ancillary": {
           "filename": "rfarm_expert_forecast_{datetime_outcome}_{ensemble}.workspace",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_dynamic/ancillary/rfarm/expert_forecast/{sub_path_time}/"
+          "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_dynamic/ancillary/rfarm/expert_forecast/{sub_path_time}/"
         },
         "rain_outcome_data": {
           "filename": "rfarm.expert_forecast.{datetime_outcome}_{ensemble}.nc",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_dynamic/outcome/rfarm/expert_forecast/{sub_path_time}/{ensemble}/"
+          "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_dynamic/outcome/rfarm/expert_forecast/{sub_path_time}/{ensemble}/"
         }
       }
     },
     "log": {
         "filename": "rfarm_expert_forecast_log.txt",
-        "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/log/rfarm/"
+        "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/log/"
     },
     "temp": {
         "filename": null,
-        "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_tmp/rfarm/"
+        "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/tmp/"
     },
     "library": {
       "filename": "",
