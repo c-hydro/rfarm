@@ -6,6 +6,8 @@ Version 4.3.0 [2022-12-19]
 **************************
 APP: **RFARM_Model_RUN_Manager.py**
 	- RainFarm package (refactor from HyDe package previous versions)
+FIX: **RFARM_Model_RUN_Manager.py**
+	- Fix metagauss domain issue related to the expert-forecast mode
 
 Version 4.2.1 [2021-08-01]
 **************************
