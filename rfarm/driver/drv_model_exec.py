@@ -29,7 +29,7 @@ from rfarm.core.lib_core_generic import extendGrid, computeGrid, \
 import rfarm.core.lib_core_app as lib_core_apps
 
 # Debug
-import matplotlib.pylab as plt
+# import matplotlib.pylab as plt
 
 # Logging
 log_stream = logging.getLogger(logger_name)
@@ -60,44 +60,19 @@ class RFarmModel:
 
     # -------------------------------------------------------------------------------------
     # Initialize class variable(s)
-    time_steps_in = None
-    time_steps_rel = None
-    time_steps_rf = None
-    time_steps_ref = None
+    time_steps_in, time_steps_rel, time_steps_rf, time_steps_ref = None, None, None, None
+    time_delta_in, time_delta_ref = None, None
+    lons_ref, lats_ref = None, None
 
-    time_delta_in = None
-    time_delta_ref = None
+    lons_rf, lats_rf, index_rf = None, None, None
 
-    lons_ref = None
-    lats_ref = None
+    ll_lon_rf, ll_lat_rf, i_min_rf, i_max_rf, j_min_rf, j_max_rf = None, None, None, None, None, None
+    lon_min_rf, lon_max_rf, lat_min_rf, lat_max_rf = None, None, None, None
 
-    lons_rf = None
-    lats_rf = None
-    index_rf = None
+    data_rf, data_slopes = None, None
 
-    ll_lon_rf = None
-    ll_lat_rf = None
-    i_min_rf = None
-    i_max_rf = None
-    j_min_rf = None
-    j_max_rf = None
-    lon_min_rf = None
-    lon_max_rf = None
-    lat_min_rf = None
-    lat_max_rf = None
-
-    data_rf = None
-    data_slopes = None
-
-    nt = None
-    ndelta = None
-
-    ns = None
-    nsl = None
-    nr = None
-    nas = None
-    ntl = None
-    nat = None
+    nt, ndelta = None, None
+    ns, nsl, nr, nas, ntl, nat = None, None, None, None, None, None
 
     ensemble_status = None
     # -------------------------------------------------------------------------------------

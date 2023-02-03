@@ -21,6 +21,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
+from copy import deepcopy
 from osgeo import gdal, gdalconst
 
 import cartopy
@@ -34,9 +35,11 @@ from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
 from rfarm.settings.lib_args import logger_name
 import rfarm.core.lib_core_regrid as lib_regrid
 
+# Logging
 log_stream = logging.getLogger(logger_name)
 
 # Debug
+# import matplotlib.pylab as plt
 #######################################################################################
 
 
@@ -124,9 +127,7 @@ def computeEnsemble(iEnsStart=1, iEnsEnd=1):
 
     if iEnsStart > iEnsEnd:
         log_stream.warning(' ====> ensemble min tag > ensemble max tag! Set to 1 default run!')
-        iEnsStart = 1
-        iEnsEnd = 1
-        iEnsTot = 1
+        iEnsStart, iEnsEnd, iEnsTot = 1, 1, 1
     else:
         pass
 
@@ -817,6 +818,7 @@ def plotResult(map_value, map_geo_x, map_geo_y):
 
 # -------------------------------------------------------------------------------------
 
+
 # -------------------------------------------------------------------------------------
 # Method to save model result(s)
 def saveResult(filename, varname, data_in,
@@ -847,22 +849,30 @@ def saveResult(filename, varname, data_in,
         data_step = data_in[:, :, time_idx_in]
 
         # Interpolate data
-        if geoindex_in is None:
-            data_regrid = lib_regrid.gridData(data_step, geox_in, geoy_in, geox_out, geoy_out)
+        if (data_step.shape[0] != geox_out.shape[0]) or (data_step.shape[1] != geoy_out.shape[1]):
+            # dimensions between data_in and data_out are different
+            if geoindex_in is None:
+                data_regrid = lib_regrid.gridData(data_step, geox_in, geoy_in, geox_out, geoy_out)
+            else:
+                data_indexed = data_step.ravel()[geoindex_in.ravel()]
+                data_regrid = np.reshape(data_indexed, [geox_out.shape[0], geoy_out.shape[1]])
+        elif (data_step.shape[0] == geox_out.shape[0]) and (data_step.shape[1] == geoy_out.shape[1]):
+            # dimensions between data_in and data_out are equal
+            data_regrid = deepcopy(data_step)
         else:
-            data_indexed = data_step.ravel()[geoindex_in.ravel()]
-            data_regrid = np.reshape(data_indexed, [geox_out.shape[0], geoy_out.shape[1]])
+            # dimensions between data_in and data_out raise an unexpected error
+            log_stream.error(' ===> Save result failed due to an unexpected dimensions case of rainfarm fields')
+            raise NotImplemented('Case not implemented yet')
 
-
-
+        """
         # Debug
-        #import matplotlib.pylab as plt
-        #plt.figure(1); plt.imshow(data_step); plt.colorbar()
-        #plt.figure(2); plt.imshow(data_regrid); plt.colorbar()
-        #plt.figure(3); plt.imshow(data_regrid2); plt.colorbar()
-        #plt.show()
-        #plotResult(data_regrid, geox_out, geoy_out)
-        #plotResult(data_step, geox_in, geoy_in)
+        plt.figure(1); plt.imshow(data_step); plt.colorbar()
+        plt.figure(2); plt.imshow(data_regrid); plt.colorbar()
+        plt.figure(3); plt.imshow(data_regrid2); plt.colorbar()
+        plt.show()
+        plotResult(data_regrid, geox_out, geoy_out)
+        plotResult(data_step, geox_in, geoy_in)
+        """
 
         # Aggregate data using time ratio between IN and OUT time(s)
         data_agg = data_agg + data_regrid
