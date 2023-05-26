@@ -1,7 +1,7 @@
 """
 Class Features
 
-Name:          drv_configuration_algorithm
+Name:          drv_configuration_algorithm_ef
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
 Date:          '20201102'
 Version:       '1.0.0'
@@ -15,11 +15,11 @@ import re
 
 from collections import OrderedDict
 
-from rfarm.io.lib_io_src_settings import read_file_settings
-from rfarm.utils.lib_utils_generic import make_folder, get_dict_values
-from rfarm.utils.lib_utils_logging import set_logging_file
+from lib_ef_io_generic import read_file_settings
+from lib_ef_generic import make_folder, get_dict_values
+from lib_ef_logging import set_logging_file
 
-from rfarm.settings.lib_args import logger_name, logger_formatter, logger_handle
+from lib_ef_args import logger_name, logger_formatter, logger_handle
 
 # Debug
 # import matplotlib.pylab as plt
@@ -33,7 +33,7 @@ class DriverAlgorithm:
     # -------------------------------------------------------------------------------------
     # Method class initialization
     def __init__(self, file_name_settings,
-                 tag_folder_name='folder', tag_file_name='filename', tag_file_history='file_history',
+                 tag_folder_name='folder_name', tag_file_name='file_name', tag_file_history='file_history',
                  tag_algorithm_dataset='data', tag_algorithm_colormap='colormap', tag_algorithm_flag='flags',
                  tag_algorithm_logging='log'):
 
@@ -53,14 +53,9 @@ class DriverAlgorithm:
 
         self.algorithm_settings = read_file_settings(self.file_name_settings)
 
-        algorithm_data = self.algorithm_settings['data']
-        self.folder_name_logging = algorithm_data[self.tag_algorithm_logging][self.tag_folder_name]
-        self.file_name_logging = algorithm_data[self.tag_algorithm_logging][self.tag_file_name]
-
-        if self.tag_file_history in list(algorithm_data[self.tag_algorithm_logging].keys()):
-            self.file_history_logging = algorithm_data[self.tag_algorithm_logging][self.tag_file_history]
-        else:
-            self.file_history_logging = True
+        self.folder_name_logging = self.algorithm_settings[self.tag_algorithm_logging][self.tag_folder_name]
+        self.file_name_logging = self.algorithm_settings[self.tag_algorithm_logging][self.tag_file_name]
+        self.file_history_logging = self.algorithm_settings[self.tag_algorithm_logging][self.tag_file_history]
 
     # -------------------------------------------------------------------------------------
 
@@ -173,21 +168,11 @@ class DriverAlgorithm:
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
-    # Set algorithm default values (for backward compatibility)
-    @staticmethod
-    def set_algorithm_default(algorithm_settings):
-        if 'algorithm_mode' not in list(algorithm_settings['algorithm']['ancillary'].keys()):
-            algorithm_settings['algorithm']['ancillary']['algorithm_mode'] = 'exec_nwp'
-        return algorithm_settings
-    # -------------------------------------------------------------------------------------
-
-    # -------------------------------------------------------------------------------------
     # Method to set algorithm info
     def set_algorithm_info(self):
 
         # Get data settings
         algorithm_settings = self.algorithm_settings
-        algorithm_settings = self.set_algorithm_default(algorithm_settings)
 
         # Set algorithm root path(s)
         algorithm_generic_paths = self.select_data(algorithm_settings, self.tag_folder_name)

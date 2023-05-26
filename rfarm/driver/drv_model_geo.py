@@ -14,7 +14,7 @@ import os
 
 from rfarm.settings.lib_args import logger_name
 from rfarm.geo.lib_geo import read_file_raster
-from rfarm.io.lib_io_generic import read_obj, write_obj
+from rfarm.io.lib_io_generic_fx import read_obj, write_obj
 from rfarm.utils.lib_utils_generic import make_folder
 
 # Log

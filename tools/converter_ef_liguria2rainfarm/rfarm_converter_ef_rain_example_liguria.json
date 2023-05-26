@@ -1,0 +1,97 @@
+{
+  "algorithm":{
+    "flag": {
+      "update_static_data_ancillary": true,
+      "update_dynamic_data_ancillary": true,
+      "update_dynamic_data_destination": true,
+      "clean_temporary_data": true
+    },
+    "general": {
+      "title": "EXPERT FORECAST RAIN",
+      "web-site": "",
+      "source": "Python library developed by CIMA Research Foundation",
+      "history": "2.0.0 [20210104]",
+      "project-info": "HyDE - Hydrological Data Engines",
+      "algorithm": "Expert Forecast rain preprocessing tools"
+    },
+    "info": {
+      "domain": "liguria"
+     
+    },
+    "template": {
+      "domain_name": "string_domain",
+      "alert_area_name": "string",
+      "source_datetime": "%Y-%m-%d",
+      "source_sub_path_time": "%Y/%m/%d/",
+      "ancillary_datetime": "%Y%m%d%H%M",
+      "ancillary_sub_path_time": "%Y/%m/%d/",
+      "destination_datetime": "%Y%m%d%H%M",
+      "destination_sub_path_time": "%Y/%m/%d/"
+    }
+  },
+  "data": {
+    "static": {
+      "source" : {
+        "terrain" : {
+          "folder_name": "/home/user/Downloads/vm_shared_folder/RainFARM/liguria/data_static/",
+          "file_name": "maschera_2000_6aa_ok.txt"
+        },
+        "alert_area": {
+          "folder_name": "/home/user/Downloads/vm_shared_folder/RainFARM/liguria/data_static/",
+          "file_name": "maschera_2000_6aa_ok.txt"
+        },
+        "slopes": {
+          "folder_name": "/home/user/Downloads/vm_shared_folder/RainFARM/liguria/data_static/",
+          "file_name": "Tabella_slopes_pthParAtan2.5_v3.mat"
+        }
+      },
+      "ancillary": {
+        "grid_reference": {
+          "folder_name": "/home/user/Downloads/vm_shared_folder/RainFARM/liguria/data_static/ancillary/expert_forecast/",
+          "file_name": "ef_rain_grid.workspace"
+        },
+        "geo_reference": {
+          "folder_name": "/home/user/Downloads/vm_shared_folder/RainFARM/liguria/data_static/ancillary/expert_forecast/",
+          "file_name": "ef_rain_geo.workspace"
+        }
+      }
+    },
+    "dynamic": {
+      "time": {
+        "time_dataset_period": 3,
+        "time_dataset_frequency": "12H",
+        "time_dataset_rounding": "12H",
+        "time_dataset_eta": "12",
+        "time_file_period": 2,
+        "time_file_frequency": "D",
+        "time_file_rounding": "D",
+        "time_file_eta": "00"
+      },
+      "source": {
+        "folder_name": "/home/user/Downloads/vm_shared_folder/RainFARM/liguria/expert_forecast/",
+        "file_name": "auto_conv_aa.input"
+      },
+      "ancillary": {
+        "folder_name": "/home/user/Downloads/vm_shared_folder/RainFARM/liguria/data_dynamic/ancillary/expert_forecast/{ancillary_sub_path_time}",
+        "file_name": "ef_rain_{domain_name}_{ancillary_datetime}.workspace"
+      },
+      "destination": {
+        "folder_name": "/home/user/Downloads/vm_shared_folder/RainFARM/liguria/data_dynamic/outcome/expert_forecast/{destination_sub_path_time}",
+        "file_name": "ef.rain.{destination_datetime}_{domain_name}_{alert_area_name}.json",
+        "file_compression": false
+      }
+    }
+  },
+  "log": {
+    "docker_name":"EF_Liguria",
+    "folder_name": "/home/user/Downloads/vm_shared_folder/RainFARM/liguria/log/",
+    "file_name": "hyde_preprocessing_ef_rain_log.log",
+    "file_history": true
+  },
+  "time": {
+    "time_run": "2021-01-03 10:32",
+    "time_period": 2,
+    "time_frequency": "D",
+    "time_rounding": "D"
+  }
+}

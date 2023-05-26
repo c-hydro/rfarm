@@ -23,7 +23,7 @@ virtual_env_name='virtualenv_python3'
 
 # LOCAL
 script_file='/home/fabio/Desktop/PyCharm_Workspace/rfarm-dev/apps/RFARM_Model_RUN_Manager.py'
-setting_file='/home/fabio/Desktop/PyCharm_Workspace/rfarm-dev/apps/rfarm_configuration_lami-2i_example.json'
+setting_file='/home/fabio/Desktop/PyCharm_Workspace/rfarm-dev/apps/rfarm_configuration_lami-2i_example_marche.json'
 
 # SERVER
 # script file='/hydro/hmc_tools_datacreator/nwp_lami-2i/FP_DynamicData_NWP_LAMI_2i.py'

@@ -2,44 +2,40 @@
 """
 Library Features:
 
-Name:          lib_rfarm_utils_regrid
+Name:          lib_core_regrid
 Author(s):     Mirko D'Andrea (mirko.dandrea@cimafoundation.org); Lorenzo Campo (lcampo@gmail.com)
 Date:          '20170530'
 Version:       '3.5.0'
 """
-#######################################################################################
-# Library
+# -------------------------------------------------------------------------------------
+# Libraries
 from scipy.interpolate import griddata
 from scipy import meshgrid
 import numpy as np
-#######################################################################################
+# -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
-# Method to compute grid indexes
-def gridIndex(a2dGeoX_IN, a2dGeoY_IN, a2dGeoX_OUT, a2dGeoY_OUT):
-    
-    iGeoDim_IN = a2dGeoX_IN.shape[0]*a2dGeoY_IN.shape[1]
-    
-    a1iGeoVal_IN = np.arange(0,iGeoDim_IN)
-    
-    a2iIndex_OUT = griddata((a2dGeoX_IN.ravel(), a2dGeoY_IN.ravel()),
-                            a1iGeoVal_IN, 
-                            (a2dGeoX_OUT, a2dGeoY_OUT), method='nearest')
+# method to compute grid indexes
+def compute_grid_index(geo_x_in, geo_y_in, geo_x_out, geo_y_out, interp_method='nearest'):
+
+    geo_dim_in = geo_x_in.shape[0] * geo_y_in.shape[1]
+    geo_idx_in = np.arange(0, geo_dim_in)
+    geo_idx_out = griddata((geo_x_in.ravel(), geo_y_in.ravel()), geo_idx_in, (geo_x_out, geo_y_out),
+                           method=interp_method)
                             
-    return a2iIndex_OUT
+    return geo_idx_out
 # -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
-# Method to regrid data (using interpolation function)
-def gridData(a2dData_IN, a2dGeoX_IN, a2dGeoY_IN, a2dGeoX_OUT, a2dGeoY_OUT, sRegridMethod='nearest', dNoData=np.nan,):
+# method to regrid data (using interpolation function)
+def compute_grid_data(data_in, geo_x_in, geo_y_in, geo_x_out, geo_y_out, interp_method='nearest', no_data=np.nan):
     
-    a2dData_OUT = griddata((a2dGeoX_IN.ravel(), a2dGeoY_IN.ravel()), 
-                           a2dData_IN.ravel(),
-                           (a2dGeoX_OUT, a2dGeoY_OUT), method=sRegridMethod, fill_value=dNoData)
+    data_out = griddata((geo_x_in.ravel(), geo_y_in.ravel()), data_in.ravel(), (geo_x_out, geo_y_out),
+                        method=interp_method, fill_value=no_data)
 
-    return a2dData_OUT
+    return data_out
 # -------------------------------------------------------------------------------------
 
 
@@ -85,8 +81,8 @@ def getReferencesAndWeights(X1, Y1, X2, Y2):
     y1_max = Y1[0, 0]+dy1/2
     
     # ciclo sulle celle della griglia di destinazione
-    nmax = (np.ceil(dx2/dx1)+1)**2 # numero massimo di celle della griglia di partenza che una cella della griglia
-                                 # di arrivo puo intersecare
+    nmax = (np.ceil(dx2/dx1)+1)**2  # numero massimo di celle della griglia di partenza che una cella della griglia
+                                    # di arrivo puo intersecare
     
     iXYCount = X2f.shape[0]
     
@@ -162,6 +158,7 @@ def regridKVolume(A, X1, Y1, X2, Y2):
     
     return B
 # -------------------------------------------------------------------------------------
+
 
 # -------------------------------------------------------------------------------------
 # Method to apply regridding using constant volume interpolating method
@@ -243,19 +240,19 @@ class KVolumeRegridder:
 # Main method to test constant volume interpolating method
 if __name__ == '__main__':
 
-    x1=np.linspace(1.5, 18.5, 18, endpoint=True)
-    y1=np.linspace(4.5, 33.5, 30, endpoint=True)
-    x2=np.linspace(1.3, 18.7, 30, endpoint=True)
-    y2=np.linspace(4.3, 33.7, 50, endpoint=True)
+    x1 = np.linspace(1.5, 18.5, 18, endpoint=True)
+    y1 = np.linspace(4.5, 33.5, 30, endpoint=True)
+    x2 = np.linspace(1.3, 18.7, 30, endpoint=True)
+    y2 = np.linspace(4.3, 33.7, 50, endpoint=True)
 
-    [X1,Y1] = meshgrid(x1, y1)
-    [X2,Y2] = meshgrid(x2, y2)
+    [X1, Y1] = meshgrid(x1, y1)
+    [X2, Y2] = meshgrid(x2, y2)
 
-    A=np.random.random_sample(X1.shape)+0.01*(X1-10)**2+0.02*(Y1-20)**2
+    A = np.random.random_sample(X1.shape)+0.01*(X1-10)**2+0.02*(Y1-20)**2
     print('somma A: ' + str(A.sum()))
 
-    regridder = KVolumeRegridder(X1, np.flipud(Y1), X2, np.flipud(Y2))
-    B = regridder.applyBufferedRegrid(A)    
+    regrid_handle = KVolumeRegridder(X1, np.flipud(Y1), X2, np.flipud(Y2))
+    B = regrid_handle.applyBufferedRegrid(A)
 
     print('B: ' + str(np.nansum(B)*0.36))
     print('A: ' + str(np.nansum(A)))

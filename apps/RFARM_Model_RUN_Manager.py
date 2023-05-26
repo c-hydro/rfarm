@@ -1,8 +1,8 @@
 """
 RFarm Model - Run Manager
 
-__date__ = '20221219'
-__version__ = '4.5.0'
+__date__ = '20230526'
+__version__ = '4.4.0'
 __author__ = 'Nicola Rebora           (nicola.rebora@cimafoundation.org)',
              'Fabio Delogu            (fabio.delogu@cimafoundation.org'),
              'Simone Gabellani        (simone.gabellani@cimafoundation.org)',
@@ -14,12 +14,13 @@ General command line:
 python3 RFARM_Model_RUN_Manager.py -settings_file configuration.json -time "YYYY-MM-DD HH:MM"
 
 Version(s):
-20221219 (4.5.0) --> RainFarm package (refactor from hyde previous versions)
+20230526 (4.4.0) --> RainFarm package for Liguria operational chain - expert forecast; fix bugs
+20221219 (4.3.0) --> RainFarm package (refactor from hyde previous versions); fix bugs
 20210503 (4.0.3) --> Add gfs025 routines
 20210202 (4.0.2) --> Adapt scripts and fix bugs; add expert forecast routines
 20210125 (4.0.1) --> Adapt scripts and fix bugs
 20190902 (4.0.0) --> Porting in Hyde package and python 3.x
-20171114 (3.5.1) --> Fix bugs (accumulated and istantaneous rain)
+20171114 (3.5.1) --> Fix bugs (accumulated and instantaneous rain)
 20170530 (3.5.0) --> Update version
 20150924 (3.0.2) --> Final release for FP Marche project
 20150823 (3.0.0) --> Final release for DRIHM project
@@ -49,8 +50,8 @@ log_stream = logging.getLogger(logger_name)
 # Algorithm information
 alg_project = 'RFarm'
 alg_name = 'Run Manager'
-alg_version = '4.5.0'
-alg_release = '2022-12-19'
+alg_version = '4.4.0'
+alg_release = '2023-05-26'
 alg_type = 'Model'
 # Algorithm parameter(s)
 time_format = '%Y-%m-%d %H:%M'
@@ -198,15 +199,11 @@ def get_args():
 
     script_name = args_parser.prog
 
+    settings_file, time_arg = 'configuration.json', None
     if 'settings_file' in args_values:
         settings_file = args_values.settings_file
-    else:
-        settings_file = 'configuration.json'
-
     if 'time_arg' in args_values:
         time_arg = args_values.time_arg
-    else:
-        time_arg = None
 
     return script_name, settings_file, time_arg
 # ----------------------------------------------------------------------------------------------------------------------

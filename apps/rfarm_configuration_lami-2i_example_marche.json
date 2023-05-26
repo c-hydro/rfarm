@@ -1,34 +1,34 @@
 {
   "algorithm":{
     "flags": {
-      "cleaning_static_data": true,
-      "cleaning_dynamic_ancillary_in": true,
-      "cleaning_dynamic_ancillary_out": true,
+      "cleaning_static_data": false,
+      "cleaning_dynamic_ancillary_in": false,
+      "cleaning_dynamic_ancillary_out": false,
       "cleaning_dynamic_out": true,
       "cleaning_dynamic_tmp": true,
-      "zipping_dynamic_out": true
+      "zipping_dynamic_out": false
     },
     "ancillary": {
       "domain" : "regional_domain",
-	  "write_engine": "netcdf4",
+      "write_engine": "netcdf4",
       "zip_format": ".gz"
     },
     "general": {
       "title": "RFarm Model",
       "web-site": "",
       "source": "Python library developed by CIMA Research Foundation",
-      "history": "4.0.0 [20190902]",
+      "history": "4.4.0 [20230526]",
       "project-info": "Rainfarm Library",
       "algorithm": "Processing tool developed by CIMA Research Foundation"
     },
     "parameters": {
-      "ensemble": {"start": 1, "end": 30},
-      "ratio_s": 18,
-      "ratio_t": 1,
+      "ensemble": {"start": 1, "end": 5},
+      "ratio_s": 4,
+      "ratio_t": 3,
       "slope_s": null,
       "slope_t": null,
-      "cs_sf": 2,
-      "ct_sf": 12,
+      "cs_sf": 4,
+      "ct_sf": 1,
       "multi_core": false,
       "domain_extension": 0,
       "tmp": true
@@ -38,31 +38,30 @@
     "static": {
       "land": {
         "terrain_data": {
-          "filename": "guyana.dem.txt",
-          "folder": "/home/hsnfews/floodProofs_HSNFEWS/data/data_static/guyana/gridded/"
+          "filename": "marche.dem.txt",
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/data_static/gridded/"
         },
         "grid_data": {
-          "filename": "rf.gfs_0p25.grid_data.workspace",
-          "folder": "/home/hsnfews/floodProofs_HSNFEWS/data/data_dynamic/ancillary/nwp/rfarm_gfs025/"
+          "filename": "rfarm_lami-2i_grid.workspace",
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/data_static/ancillary/lami-2i/"
         }
       },
       "colormap": {
         "rain_colormap" : {
           "filename": null,
-          "folder" : "/home/hsnfews/floodProofs_HSNFEWS/data/data_dynamic/ancillary/nwp/rfarm_gfs025/"
+          "folder" : "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/data_static/colormap/"
         }
       }
     },
     "dynamic": {
       "template": {
-        "run_hour":"%H",
-        "datetime_input": "%Hz.0p25.%Y%m%d",
-        "datetime_outcome": "%Hz.0p25.%Y%m%d",
+        "datetime_input": "%Y%m%d",
+        "datetime_outcome": "%Y%m%d%H%M",
         "sub_path_time": "%Y/%m/%d",
         "ensemble": "{:03d}"
       },
       "time": {
-        "time_forecast_period": 120,
+        "time_forecast_period": 48,
         "time_forecast_frequency": "H",
         "time_observed_period": 0,
         "time_observed_frequency": "H",
@@ -70,33 +69,33 @@
       },
       "input": {
         "rain_input_data": {
-          "__comment__": "guyana_gfs.t00z.0p25.20200426_srf_rain.nc",
-          "filename": "guyana_gfs.t{datetime_input}_srf_rain.nc",
-          "folder": "/home/hsnfews/floodProofs_HSNFEWS/data/data_dynamic/outcome/nwp/gfs025/domain/{sub_path_time}/"
+          "__comment__": "20181220-lami-2i.t00z.PRECI1",
+          "filename": "{datetime_input}-lami-2i.t00z.PRECI1",
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/data_dynamic/source/nwp//lami-2i/"
         },
         "rain_input_ancillary" : {
-          "filename" : "{datetime_input}_gfs_0p25_t00z_precipitaion1h.workspace",
-          "folder": "/home/hsnfews/floodProofs_HSNFEWS/data/data_dynamic/ancillary/nwp/rfarm_gfs025/{sub_path_time}/"
+          "filename" : "nwp_lami-2i_precipitation1h_{datetime_input}.workspace",
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/data_dynamic/ancillary/lami-2i/{sub_path_time}/"
         }
       },
       "outcome": {
         "rain_outcome_ancillary": {
-          "filename": "rf.gfs_t{datetime_outcome}_{ensemble}.workspace",
-          "folder": "/home/hsnfews/floodProofs_HSNFEWS/data/data_dynamic/ancillary/nwp/rfarm_gfs025/{sub_path_time}/"
+          "filename": "rfarm_lami-2i_{datetime_outcome}_{ensemble}.workspace",
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/data_dynamic/ancillary/lami-2i/{sub_path_time}/"
         },
         "rain_outcome_data": {
-          "filename": "rf_guyana_gfs.t{datetime_outcome}_{ensemble}.nc",
-          "folder": "/home/hsnfews/floodProofs_HSNFEWS/data/data_dynamic/outcome/nwp/rfarm_gfs025/{sub_path_time}/"
+          "filename": "rfarm.lami-2i.{datetime_outcome}_{ensemble}.nc",
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/data_dynamic/outcome/lami-2i/{sub_path_time}/{ensemble}/"
         }
       }
     },
     "log": {
-        "filename": "rfarm_gfs_0p25_log_realtime.txt",
-        "folder": "/home/hsnfews/floodProofs_HSNFEWS/log/preprocessing/"
+        "filename": "rfarm_lami-2i_log.txt",
+        "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/log/"
     },
     "temp": {
         "filename": null,
-        "folder": "/home/hsnfews/floodProofs_HSNFEWS/data/data_dynamic/ancillary/nwp/rfarm_gfs025/temp/"
+        "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/tmp/"
     },
     "library": {
       "filename": "",
@@ -108,19 +107,19 @@
     }
   },
   "time": {
-    "time_now": null,
+    "time_now": "201812210000",
     "time_period": 0,
-    "time_frequency": "H",
-    "time_rounding": "H"
+    "time_frequency": "D",
+    "time_rounding": "D"
   },
   "variables": {
     "input": {
       "rain_data": {
         "id": {
-          "var_type": ["var3d", "inst"],
-          "var_source": "gfs025",
-          "var_format": "netcdf",
-          "var_name": "Total Precipitation",
+          "var_type": ["var3d", "instantaneous"],
+          "var_source": "lami_2i",
+          "var_format": "grib",
+          "var_name": "tp",
           "var_file": "rain_data",
           "var_colormap": null,
           "var_parameters": null
@@ -140,13 +139,14 @@
     "outcome": {
       "rain_data":{
         "id": {
-          "var_type": ["var3d", "inst"],
+          "var_type": ["var3d", "accumulated"],
           "var_source": null,
           "var_format": "netcdf",
           "var_name": "Rain",
           "var_file": "rfarm_data",
           "var_colormap": null,
-          "var_parameters": null
+          "var_parameters": null,
+          "var_frequency": "H"
         },
         "attributes": {
           "long_name": "",

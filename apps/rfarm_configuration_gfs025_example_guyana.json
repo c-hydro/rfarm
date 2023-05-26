@@ -1,7 +1,7 @@
 {
   "algorithm":{
     "flags": {
-      "cleaning_static_data": false,
+      "cleaning_static_data": true,
       "cleaning_dynamic_ancillary_in": true,
       "cleaning_dynamic_ancillary_out": true,
       "cleaning_dynamic_out": true,
@@ -10,26 +10,25 @@
     },
     "ancillary": {
       "domain" : "regional_domain",
-      "write_engine": "netcdf4",
+	  "write_engine": "netcdf4",
       "zip_format": ".gz"
     },
     "general": {
       "title": "RFarm Model",
       "web-site": "",
       "source": "Python library developed by CIMA Research Foundation",
-      "history": "4.0.0 [20190902]",
+      "history": "4.4.0 [20230526]",
       "project-info": "Rainfarm Library",
       "algorithm": "Processing tool developed by CIMA Research Foundation"
     },
     "parameters": {
-      "__comment__": "CTsf = 2 --> 10800*2 = 21600 = 6 ore",
-      "ensemble": {"start": 1, "end": 3},
-      "ratio_s": 4,
-      "ratio_t": 3,
+      "ensemble": {"start": 1, "end": 30},
+      "ratio_s": 18,
+      "ratio_t": 1,
       "slope_s": null,
       "slope_t": null,
       "cs_sf": 2,
-      "ct_sf": 2,
+      "ct_sf": 12,
       "multi_core": false,
       "domain_extension": 0,
       "tmp": true
@@ -39,30 +38,31 @@
     "static": {
       "land": {
         "terrain_data": {
-          "filename": "marche.dem.txt",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_static/gridded/"
+          "filename": "guyana.dem.txt",
+          "folder": "/home/hsnfews/floodProofs_HSNFEWS/data/data_static/guyana/gridded/"
         },
         "grid_data": {
-          "filename": "rfarm_ecmwf0100_grid.workspace",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_static/ancillary/rfarm/ecmwf0100/"
+          "filename": "rf.gfs_0p25.grid_data.workspace",
+          "folder": "/home/hsnfews/floodProofs_HSNFEWS/data/data_dynamic/ancillary/nwp/rfarm_gfs025/"
         }
       },
       "colormap": {
         "rain_colormap" : {
           "filename": null,
-          "folder" : "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_static/colormap/"
+          "folder" : "/home/hsnfews/floodProofs_HSNFEWS/data/data_dynamic/ancillary/nwp/rfarm_gfs025/"
         }
       }
     },
     "dynamic": {
       "template": {
-        "datetime_input": "%Y%m%d",
-        "datetime_outcome": "%Y%m%d%H%M",
+        "run_hour":"%H",
+        "datetime_input": "%Hz.0p25.%Y%m%d",
+        "datetime_outcome": "%Hz.0p25.%Y%m%d",
         "sub_path_time": "%Y/%m/%d",
         "ensemble": "{:03d}"
       },
       "time": {
-        "time_forecast_period": 84,
+        "time_forecast_period": 120,
         "time_forecast_frequency": "H",
         "time_observed_period": 0,
         "time_observed_frequency": "H",
@@ -70,33 +70,33 @@
       },
       "input": {
         "rain_input_data": {
-          "__comment__": "20201116-ecmwf.t00z.PRECI3",
-          "filename": "{datetime_input}-ecmwf0100.t00z.PRECI3",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_dynamic/source/nwp/ecmwf0100/"
+          "__comment__": "guyana_gfs.t00z.0p25.20200426_srf_rain.nc",
+          "filename": "guyana_gfs.t{datetime_input}_srf_rain.nc",
+          "folder": "/home/hsnfews/floodProofs_HSNFEWS/data/data_dynamic/outcome/nwp/gfs025/domain/{sub_path_time}/"
         },
         "rain_input_ancillary" : {
-          "filename" : "nwp_ecmwf0100_precipitation3h_{datetime_input}.workspace",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_dynamic/ancillary/rfarm/ecmwf0100/{sub_path_time}/"
+          "filename" : "{datetime_input}_gfs_0p25_t00z_precipitaion1h.workspace",
+          "folder": "/home/hsnfews/floodProofs_HSNFEWS/data/data_dynamic/ancillary/nwp/rfarm_gfs025/{sub_path_time}/"
         }
       },
       "outcome": {
         "rain_outcome_ancillary": {
-          "filename": "rfarm_ecmwf0100_{datetime_outcome}_{ensemble}.workspace",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_dynamic/ancillary/rfarm/ecmwf0100/{sub_path_time}/"
+          "filename": "rf.gfs_t{datetime_outcome}_{ensemble}.workspace",
+          "folder": "/home/hsnfews/floodProofs_HSNFEWS/data/data_dynamic/ancillary/nwp/rfarm_gfs025/{sub_path_time}/"
         },
         "rain_outcome_data": {
-          "filename": "rfarm.ecmwf0100.{datetime_outcome}_{ensemble}.nc",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_dynamic/outcome/rfarm/ecmwf0100/{sub_path_time}/{ensemble}/"
+          "filename": "rf_guyana_gfs.t{datetime_outcome}_{ensemble}.nc",
+          "folder": "/home/hsnfews/floodProofs_HSNFEWS/data/data_dynamic/outcome/nwp/rfarm_gfs025/{sub_path_time}/"
         }
       }
     },
     "log": {
-        "filename": "rfarm_ecmwf0100_log.txt",
-        "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/log/rfarm/"
+        "filename": "rfarm_gfs_0p25_log_realtime.txt",
+        "folder": "/home/hsnfews/floodProofs_HSNFEWS/log/preprocessing/"
     },
     "temp": {
         "filename": null,
-        "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_tmp/rfarm/"
+        "folder": "/home/hsnfews/floodProofs_HSNFEWS/data/data_dynamic/ancillary/nwp/rfarm_gfs025/temp/"
     },
     "library": {
       "filename": "",
@@ -110,30 +110,29 @@
   "time": {
     "time_now": null,
     "time_period": 0,
-    "time_frequency": "D",
-    "time_rounding": "D"
+    "time_frequency": "H",
+    "time_rounding": "H"
   },
   "variables": {
     "input": {
       "rain_data": {
         "id": {
-          "var_type": ["var3d", "accumulated"],
-          "var_source": "ecmwf0100",
-          "var_format": "grib",
-          "var_name": "tp",
+          "var_type": ["var3d", "inst"],
+          "var_source": "gfs025",
+          "var_format": "netcdf",
+          "var_name": "Total Precipitation",
           "var_file": "rain_data",
           "var_colormap": null,
           "var_parameters": null
         },
         "attributes": {
-          "__comment__" : "mm == kg m**-2",
-          "long_name": "Total precipitation (3_Hour Accumulation) @ Ground or water surface'",
+          "long_name": "",
           "standard_name": "total_precipitation",
           "Missing_value": -9999.0,
           "_FillValue": -9999.0,
-          "ScaleFactor": 0.001,
+          "ScaleFactor": 1,
           "Valid_range": [0, null],
-          "units": "m",
+          "units": "kg m**-2",
           "description": ""
         }
       }
@@ -141,7 +140,7 @@
     "outcome": {
       "rain_data":{
         "id": {
-          "var_type": ["var3d", "accumulated"],
+          "var_type": ["var3d", "inst"],
           "var_source": null,
           "var_format": "netcdf",
           "var_name": "Rain",
@@ -150,7 +149,7 @@
           "var_parameters": null
         },
         "attributes": {
-          "long_name": "Total precipitation (1_Hour Accumulation) @ Ground or water surface",
+          "long_name": "",
           "standard_name": "total_precipitation",
           "Missing_value": -9999.0,
           "_FillValue": -9999.0,

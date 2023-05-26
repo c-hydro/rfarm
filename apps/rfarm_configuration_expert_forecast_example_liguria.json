@@ -9,24 +9,26 @@
       "zipping_dynamic_out": true
     },
     "ancillary": {
+      "__comment__": "out_format: [binary, netcdf]",
       "_comment_domain" : "regional_domain",
       "domain" : {
-        "tag_domain_1": {"name": "alert_area_a",  "id": 1},
-        "tag_domain_2": {"name": "alert_area_b",  "id": 2},
-        "tag_domain_3": {"name": "alert_area_c",  "id": 3},
-        "tag_domain_4": {"name": "alert_area_d",  "id": 4},
-        "tag_domain_5": {"name": "alert_area_e",  "id": 5},
-        "tag_domain_6": {"name": "alert_area_f",  "id": 6}
+        "tag_domain_1": {"name": "alert_area_a",   "id": 1},
+        "tag_domain_2": {"name": "alert_area_b",   "id": 3},
+        "tag_domain_3": {"name": "alert_area_cm",  "id": 5},
+        "tag_domain_4": {"name": "alert_area_d",   "id": 2},
+        "tag_domain_5": {"name": "alert_area_e",   "id": 4},
+        "tag_domain_6": {"name": "alert_area_m",   "id": 6}
       },
       "write_engine": "netcdf4",
       "zip_format": ".gz",
-      "algorithm_mode": "exec_expert_forecast"
+      "algorithm_mode": "exec_expert_forecast",
+      "out_format": "bin"
     },
     "general": {
       "title": "RFarm Model",
       "web-site": "",
       "source": "Python library developed by CIMA Research Foundation",
-      "history": "4.5.0 [20221219]",
+      "history": "4.4.0 [20230526]",
       "project-info": "Rainfarm Library",
       "algorithm": "Processing tool developed by CIMA Research Foundation"
     },
@@ -48,22 +50,22 @@
     "static": {
       "land": {
         "terrain_data": {
-          "filename": "marche.dem.txt",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_static/gridded/"
+          "filename": "maschera_2000_aa.txt",
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_liguria/data_static/gridded/"
         },
         "alert_area_data": {
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_static/gridded/",
-          "filename": "marche.alertarea_2017.txt"
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_liguria/data_static/gridded/",
+          "filename": "maschera_2000_aa.txt"
         },
         "grid_data": {
           "filename": "rfarm_expert_forecast_grid.workspace",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_static/ancillary/rfarm/expert_forecast/"
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_liguria/data_static/ancillary/rfarm/expert_forecast/"
         }
       },
       "colormap": {
         "rain_colormap" : {
           "filename": null,
-          "folder" : "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_static/colormap/"
+          "folder" : "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_liguria/data_static/colormap/"
         }
       }
     },
@@ -76,7 +78,7 @@
         "domain": "string_domain"
       },
       "time": {
-        "time_forecast_period": 36,
+        "time_forecast_period": 12,
         "time_forecast_frequency": "H",
         "time_observed_period": 0,
         "time_observed_frequency": "H",
@@ -84,32 +86,32 @@
       },
       "input": {
         "rain_input_data": {
-          "filename": "ef.rain.{datetime_input}_{domain}.csv",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_dynamic/destination/expert_forecast/{sub_path_time}/"
+          "filename": "{domain}.json",
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_liguria/data_dynamic/destination/expert_forecast/{sub_path_time}/"
         },
         "rain_input_ancillary" : {
           "filename" : "expert_forecast_precipitation_{datetime_input}.workspace",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_dynamic/ancillary/rfarm/{sub_path_time}/"
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_liguria/data_dynamic/ancillary/rfarm/{sub_path_time}/"
         }
       },
       "outcome": {
         "rain_outcome_ancillary": {
           "filename": "rfarm_expert_forecast_{datetime_outcome}_{ensemble}.workspace",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_dynamic/ancillary/rfarm/{sub_path_time}/"
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_liguria/data_dynamic/ancillary/rfarm/{sub_path_time}/"
         },
         "rain_outcome_data": {
           "filename": "rfarm.expert_forecast.{datetime_outcome}_{ensemble}.nc",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/data_dynamic/destination/rfarm/{sub_path_time}/{ensemble}/"
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_liguria/data_dynamic/destination/rfarm/{sub_path_time}/{ensemble}/"
         }
       }
     },
     "log": {
         "filename": "rfarm_expert_forecast_log.txt",
-        "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/log/"
+        "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_liguria/log/"
     },
     "temp": {
         "filename": null,
-        "folder": "/home/fabio/Desktop/PyCharm_Workspace/rfarm-ws/opchain_marche/tmp/"
+        "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_liguria/tmp/"
     },
     "library": {
       "filename": "",
@@ -132,7 +134,7 @@
         "id": {
           "var_type": ["var1d", "instantaneous"],
           "var_source": "expert_forecast",
-          "var_format": "csv",
+          "var_format": "json",
           "var_name": "slopes",
           "var_file": "slope_data",
           "var_colormap": null,

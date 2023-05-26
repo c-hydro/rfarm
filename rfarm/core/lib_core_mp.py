@@ -24,10 +24,10 @@ log_stream = logging.getLogger(logger_name)
 
 
 # -------------------------------------------------------------------------------------
-# Method to get process id
-def getProcessInfo(sTitle):
+# method to get process id
+def get_process_id(process_name):
     # Info
-    log_stream.info(' ------> Info: ' + str(sTitle) + ' ModuleName: ' + str(__name__))
+    log_stream.info(' ------> Info: ' + str(process_name) + ' ModuleName: ' + str(__name__))
 
     if hasattr(os, 'getppid'):  # only available on Unix
         log_stream.info(' -------> Parent process id: ' + str(os.getppid()))
@@ -38,18 +38,18 @@ def getProcessInfo(sTitle):
 
 
 # -------------------------------------------------------------------------------------
-# Method to get process signal start
-def getProcessSignalStart():
+# method to get process signal start
+def get_process_signal_start():
     # Info
     log_stream.info(' ------> Process: ' + str(mp.current_process().name) + ' ... START')
-
 # -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
-# Method to get process signal end
-def getProcessSignalEnd(oP):
+# method to get process signal end
+def get_process_signal_end(process_obj):
     # Info
-    log_stream.info(' ------> Process: ' + str(oP.name) + ' ExitCode: ' + str(oP.exitcode) + ' ... CLOSED')
+    log_stream.info(' ------> Process: ' + str(process_obj.name) + ' ExitCode: ' +
+                    str(process_obj.exitcode) + ' ... CLOSED')
 
 # -------------------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 """
 Library Features:
 
-Name:          lib_io_grib
+Name:          lib_io_src_grib
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
 Date:          '20210104'
 Version:       '1.0.0'
@@ -21,6 +21,7 @@ from scipy.interpolate import griddata
 
 from rfarm.settings.lib_args import time_format, logger_name
 
+# Logging
 logging.getLogger("cfgrib").setLevel(logging.WARNING)
 log_stream = logging.getLogger(logger_name)
 
@@ -320,14 +321,16 @@ def read_data_lami_2i(file_name, data_filters=None, data_var='tp',
 
         cmp_values[step, :, :] = tmp_values
 
+        '''
         # DEBUG
-        #plt.figure()
-        #plt.imshow(step_values)
-        #plt.colorbar()
-        #plt.figure()
-        #plt.imshow(tmp_values)
-        #plt.colorbar()
-        #plt.show()
+        plt.figure()
+        plt.imshow(step_values)
+        plt.colorbar()
+        plt.figure()
+        plt.imshow(tmp_values)
+        plt.colorbar()
+        plt.show()
+        '''
 
     '''
     var_high_cmp = var_geo_x_cmp.shape[1]
@@ -349,7 +352,7 @@ def read_data_lami_2i(file_name, data_filters=None, data_var='tp',
     '''
 
     da_var_cmp = xr.DataArray(cmp_values, name=data_var, dims=[tag_dim_time, tag_dim_geo_y, tag_dim_geo_x],
-                                coords={
+                              coords={
                                     tag_dim_time: ([tag_dim_time], var_time),
                                     tag_dim_geo_x: ([tag_dim_geo_x], var_geo_x_cmp[0, :]),
                                     tag_dim_geo_y: ([tag_dim_geo_y], var_geo_y_cmp[:, 0])})
@@ -369,79 +372,4 @@ def read_data_lami_2i(file_name, data_filters=None, data_var='tp',
     log_stream.info(' --> Open file ' + file_name + ' ... DONE')
 
     return da_var_cmp, da_time, var_geo_x_cmp, var_geo_y_cmp
-# -------------------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------------
-# Method to convert time for lami-2i
-def convert_time_ecmwf_0100_OLD(var_time_idx, var_time_exp=None):
-    var_time_date = computeTime(var_time_idx, time_format)[0]
-    var_time_cmp = pd.to_datetime(var_time_date)
-
-    if var_time_exp.equals(var_time_cmp):
-        var_time_series = var_time_exp
-    else:
-        var_freq_inferred = var_time_cmp.inferred_freq
-        var_time_series = pd.date_range(start=var_time_cmp[0],
-                                        periods=list(var_time_cmp.values).__len__(),
-                                        freq=var_freq_inferred)
-
-    return var_time_series
-# -------------------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------------
-# Method to convert data for lami-2i
-def convert_data_ecmwf_0100_OLD(var_data_raw, var_units, var_type_feat='accumulated'):
-    var_data_def = computeRain_ECMWF_0100(var_data_raw, oVarUnits=[var_units],  oVarType=[var_type_feat])
-    return var_data_def
-# -------------------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------------
-# Method to read data for lami-2i
-def read_data_lami_2i_OLD(file_handle, file_drv, var_name='Total Precipitation'):
-
-    # Get geographical information
-    var_geox, var_geoy = file_drv.oFileLibrary.getVarGeo_LAMI_2i(file_handle)
-
-    # Get time steps
-    var_time = file_drv.oFileLibrary.getVarTime_LAMI_2i(file_handle, var_name)[var_name]
-
-    # Get data values
-    var_data = file_drv.oFileLibrary.getVar3D_LAMI_2i(file_handle, var_name)[var_name]
-
-    # Set correct south-north and west-east direction(s)
-    var_n = var_data.shape[2]
-    for i in range(0, var_n):
-        var_data[:, :, i] = np.flipud(var_data[:, :, i])
-    var_geoy = np.flipud(var_geoy)
-
-    return var_data, var_time, var_geox, var_geoy
-# -------------------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------------
-# Method to convert time for lami-2i
-def convert_time_lami_2i_OLD(var_time_idx, var_time_exp=None):
-    var_time_date = computeTime(var_time_idx, time_format)[0]
-    var_time_cmp = pd.to_datetime(var_time_date)
-
-    if var_time_exp.equals(var_time_cmp):
-        var_time_series = var_time_exp
-    else:
-        var_freq_inferred = var_time_cmp.inferred_freq
-        var_time_series = pd.date_range(start=var_time_cmp[0],
-                                        periods=list(var_time_cmp.values).__len__(),
-                                        freq=var_freq_inferred)
-
-    return var_time_series
-# -------------------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------------
-# Method to convert data for lami-2i
-def convert_data_lami_2i_OLD(var_data_raw, var_units, var_type_feat='accumulated'):
-    var_data_def = computeRain(var_data_raw, oVarUnits=[var_units],  oVarType=[var_type_feat])
-    return var_data_def
 # -------------------------------------------------------------------------------------

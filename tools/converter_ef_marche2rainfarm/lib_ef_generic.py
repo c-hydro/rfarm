@@ -1,85 +1,82 @@
 """
 Library Features:
 
-Name:          lib_utils_generic
+Name:          lib_ef_generic
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
 Date:          '20201202'
 Version:       '1.0.0'
 """
-
 #######################################################################################
 # Library
 import logging
 import os
-import xarray as xr
+import re
 
 import numpy as np
+
+from shutil import rmtree
+from random import randint
+from copy import deepcopy
 from datetime import datetime
-
-from rfarm.settings.lib_args import logger_name
-
-# Logging
-log_stream = logging.getLogger(logger_name)
 #######################################################################################
 
 
 # -------------------------------------------------------------------------------------
-# method to convert obj to dict
-def convert_obj2dict(obj_value=None, obj_key='tmp'):
-    obj_dict = {obj_key: obj_value}
-    return obj_dict
+# Method to search root path
+def get_root_path(generic_path):
+
+    string_patterns = re.findall(r"\{([A-Za-z0-9_]+)\}", generic_path)
+
+    dict_patterns = {}
+    for string_pattern in string_patterns:
+        dict_patterns[string_pattern] = ''
+
+    root_path = generic_path.format(**dict_patterns)
+
+    return root_path
 # -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
-# Method to reshape 3d variable
-def reshape_var3d(var_values_in):
-    var_shape = var_values_in.shape
-    var_values_out = np.zeros([var_shape[1], var_shape[2], var_shape[0]])
-    for id_step, var_step in enumerate(var_values_in):
-        var_value_step = var_values_in[id_step, :, :]
-        var_values_out[:, :, id_step] = var_value_step
-    return var_values_out
+# Method to list sub-folders
+def list_folder(main_path, reverse=True):
+    path_generator = os.walk(main_path)
+
+    path_list = []
+    for path_obj in path_generator:
+        path_string = path_obj[0]
+        path_list.append(path_string)
+
+    if reverse:
+        path_list.reverse()
+
+    return path_list
 # -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
-# Method to create a data array
-def create_darray_3d(data, time, geo_x, geo_y, geo_1d=True,
-                     dim_key_x='west_east', dim_key_y='south_north', dim_key_time='time',
-                     dim_name_x='west_east', dim_name_y='south_north', dim_name_time='time',
-                     dims_order=None):
+# Method to create a random string
+def random_string(string_root='temporary', string_separetor='_', rand_min=0, rand_max=1000):
 
-    if dims_order is None:
-        dims_order = [dim_name_y, dim_name_x, dim_name_time]
+    # Rand number
+    rand_n = str(randint(rand_min, rand_max))
+    # Rand time
+    rand_time = datetime.now().strftime('%Y%m%d-%H%M%S_%f')
+    # Rand string
+    rand_string = string_separetor.join([string_root, rand_time, rand_n])
 
-    if geo_1d:
-        if geo_x.shape.__len__() == 2:
-            geo_x = geo_x[0, :]
-        if geo_y.shape.__len__() == 2:
-            geo_y = geo_y[:, 0]
-
-        data_da = xr.DataArray(data,
-                               dims=dims_order,
-                               coords={dim_key_time: ([dim_name_time], time),
-                                       dim_key_x: (dim_name_x, geo_x),
-                                       dim_key_y: (dim_name_y, geo_y)})
-    else:
-        data_da = None
-    return data_da
+    return rand_string
 # -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
-# Method to merge dictionaries (DA RIVEDERE)
-def merge_dict(d1, d2):
+# Method to delete folder (and check if folder exists)
+def delete_folder(path_folder):
+    # Check folder status
+    if os.path.exists(path_folder):
+        # Remove folder (file only-read too)
+        rmtree(path_folder, ignore_errors=True)
 
-    dd = {}
-    for d in (d1, d2):  # you can list as many input dicts as you want here
-        for key, value in iter(d.items()):
-            dd[key] = value
-
-    return dd
 # -------------------------------------------------------------------------------------
 
 
@@ -104,15 +101,17 @@ def fill_tags2string(string_raw, tags_format=None, tags_filling=None):
 
     if apply_tags:
 
-        # string_filled_1 = string_raw.format(**tags_format)
-
+        tags_format_tmp = deepcopy(tags_format)
         for tag_key, tag_value in tags_format.items():
-            tag_key = '{' + tag_key + '}'
+            tag_key_tmp = '{' + tag_key + '}'
             if tag_value is not None:
-                string_filled = string_raw.replace(tag_key, tag_value)
-                string_raw = string_filled
+                if tag_key_tmp in string_raw:
+                    string_filled = string_raw.replace(tag_key_tmp, tag_value)
+                    string_raw = string_filled
+                else:
+                    tags_format_tmp.pop(tag_key, None)
 
-        for tag_format_name, tag_format_value in list(tags_format.items()):
+        for tag_format_name, tag_format_value in list(tags_format_tmp.items()):
 
             if tag_format_name in list(tags_filling.keys()):
                 tag_filling_value = tags_filling[tag_format_name]
@@ -120,6 +119,9 @@ def fill_tags2string(string_raw, tags_format=None, tags_filling=None):
 
                     if isinstance(tag_filling_value, datetime):
                         tag_filling_value = tag_filling_value.strftime(tag_format_value)
+
+                    if isinstance(tag_filling_value, (float, int)):
+                        tag_filling_value = tag_format_value.format(tag_filling_value)
 
                     string_filled = string_filled.replace(tag_format_value, tag_filling_value)
 

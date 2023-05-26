@@ -1,25 +1,26 @@
-
 """
 Library Features:
 
-Name:          lib_io_generic
+Name:          lib_io_dst_netcdf
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
-Date:          '20210104'
-Version:       '1.0.0'
+Date:          '20201102'
+Version:       '3.0.0'
 """
-
-# -------------------------------------------------------------------------------------
-# Libraries
+#################################################################################
+# Library
 import logging
-import os
-import pickle
 import json
 import xarray as xr
 
 from copy import deepcopy
 
 from rfarm.geo.lib_geo import clip_map
-# -------------------------------------------------------------------------------------
+from rfarm.settings.lib_args import logger_name
+
+# Logging
+log_stream = logging.getLogger(logger_name)
+#################################################################################
+
 
 # -------------------------------------------------------------------------------------
 # Attr(s) decoded
@@ -31,39 +32,12 @@ missing_value_attr = 'Missing_value'
 
 
 # -------------------------------------------------------------------------------------
-# Method to create a data array
-def create_darray_2d(data, geox, geoy):
-
-    darray = xr.DataArray(data,
-                          dims=['south_north', 'west_east'],
-                          coords={'longitude': (['south_north', 'west_east'], geox),
-                                  'latitude': (['south_north', 'west_east'], geoy)})
-
-    return darray
-# -------------------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------------
-# Method to create a data array
-def create_darray_3d(data, time, geox, geoy):
-
-    darray = xr.DataArray(data,
-                          dims=['south_north', 'west_east', 'time'],
-                          coords={'time': (['time'], time),
-                                  'longitude': (['south_north', 'west_east'], geox),
-                                  'latitude': (['south_north', 'west_east'], geoy)})
-
-    return darray
-# -------------------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------------
 # Method to create dataset
-def create_dset(time,
-                data, terrain, geox, geoy,
-                var_name='Rain', terrain_name='Terrain',
-                var_attrs=None, terrain_attrs=None,
-                dim_x_name='west_east', dim_y_name='south_north', dim_t_name='time'):
+def create_dset_nc(time,
+                   data, terrain, geox, geoy,
+                   var_name='Rain', terrain_name='Terrain',
+                   var_attrs=None, terrain_attrs=None,
+                   dim_x_name='west_east', dim_y_name='south_north', dim_t_name='time'):
 
     dset = xr.Dataset(coords={'time': ([dim_t_name], time)})
     dset.coords['time'] = dset.coords['time'].astype('datetime64[ns]')
@@ -134,7 +108,7 @@ def create_dset(time,
 
 # -------------------------------------------------------------------------------------
 # Method to write dataset
-def write_dset(filename, dset, attrs=None, mode='w', engine='h5netcdf', compression=0):
+def write_dset_nc(filename, dset, attrs=None, mode='w', engine='h5netcdf', compression=0):
 
     data_encoded = dict(zlib=True, complevel=compression)
 
@@ -171,42 +145,3 @@ def write_dset(filename, dset, attrs=None, mode='w', engine='h5netcdf', compress
     dset.to_netcdf(path=filename, format='NETCDF4', mode=mode, engine=engine, encoding=data_encoding)
 
 # -------------------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------------
-# Method to get file settings in json format
-def read_file_settings(file_name_settings):
-    if os.path.exists(file_name_settings):
-        with open(file_name_settings) as file_handle:
-            data_settings = json.load(file_handle)
-    else:
-        logging.error(' ===> Error in reading algorithm settings file "' + file_name_settings + '"')
-        raise IOError('File not found')
-    return data_settings
-# -------------------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------------
-# Method to read data obj
-def read_obj(filename):
-    if os.path.exists(filename):
-        data = pickle.load(open(filename, "rb"))
-    else:
-        data = None
-    return data
-# -------------------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------------
-# Method to write data obj
-def write_obj(filename, data):
-
-    if os.path.exists(filename):
-        os.remove(filename)
-
-    with open(filename, 'wb') as handle:
-        pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
-# -------------------------------------------------------------------------------------
-
-
-

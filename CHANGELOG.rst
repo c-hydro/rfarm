@@ -2,6 +2,20 @@
 Changelog
 =========
 
+Version 4.4.0 [2023-05-26]
+**************************
+APP: **RFARM_Model_RUN_Manager.py**
+	- Add and refactor functions for "expert_forecast" and "nwp" mode
+	- Add "pth" parameters to the "expert_forecast" mode
+	- Support for different time window in the "expert_forecast" mode
+APP: **RFARM_Converter_EF_Rain.py**
+	- Add the procedures, for Marche and Liguria region, to convert the "expert_forecast" original file
+	to the file needed by RainFarm to execute the "expert_forecast" mode
+FIX: **RFARM_Model_RUN_Manager.py**
+	- Fix bugs in the grid definition
+	- Fix bugs in the "expert_forecast" output fields
+	- Fix bugs in the fx and methods 
+
 Version 4.3.0 [2022-12-19]
 **************************
 APP: **RFARM_Model_RUN_Manager.py**

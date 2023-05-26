@@ -6,7 +6,7 @@ Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
 Date:          '20190903'
 Version:       '1.0.0'
 """
-#################################################################################
+# -------------------------------------------------------------------------------------
 # Library
 import logging
 import os
@@ -29,7 +29,7 @@ log_stream = logging.getLogger(logger_name)
 
 # Debug
 # import matplotlib.pylab as plt
-#################################################################################
+# -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
@@ -92,7 +92,8 @@ class ModelTime:
         else:
             time_end = time_step
 
-        time_range = pd.date_range(start=time_start, end=time_end, freq=time_observed_frequency, closed=time_closed)
+        time_range = pd.date_range(start=time_start, end=time_end,
+                                   freq=time_observed_frequency, inclusive=time_closed)
         time_range = time_range.sort_values(return_indexer=False, ascending=time_ascending)
 
         time_obj = DataObj
@@ -327,8 +328,9 @@ class ModelRunner:
             filename_out=self.filename_out_raw,
             var_name=self.var_info_out['id']['var_name'],
             var_freq=var_frequency,
-            var_dims=self.var_info_in['id']['var_type'][0],
+            var_dims=self.var_info_out['id']['var_type'][0],
             var_attrs=self.var_info_out['attributes'],
+            file_format=self.var_info_out['id']['var_format'],
             ensemble_zip=file_out_zipping,
             ext_zip_type=file_ext_zipping,
             write_engine=file_write_engine
@@ -427,7 +429,7 @@ class ModelRunner:
     def configure(self, data_obj):
 
         # -------------------------------------------------------------------------------------
-        # Starting info
+        # info start
         log_stream.info(' ---> Model configuration ... ')
 
         # Check data availability
@@ -445,6 +447,7 @@ class ModelRunner:
                     lons_obj = self.data_geo_terrain['longitude']
                     lats_obj = self.data_geo_terrain['latitude']
                     time_obj = data_obj['time']
+                    info_obj = data_obj['info']
 
                 elif isinstance(data_obj, xr.DataArray):
 
@@ -452,6 +455,7 @@ class ModelRunner:
                     lons_obj = data_obj['longitude'].values
                     lats_obj = data_obj['latitude'].values
                     time_obj = data_obj['time'].values
+                    info_obj = None
 
                 else:
                     log_stream.error(' ===> Data object not in supported format.')
@@ -462,25 +466,28 @@ class ModelRunner:
                 res_lon_geo = self.data_geo_terrain['res_lon']
                 res_lat_geo = self.data_geo_terrain['res_lat']
 
-                # Configure model grid(s)
+                # configure model grid(s)
                 self.driver_rf_model.configure_grid(lons_obj, lats_obj,
                                                     lons_geo, lats_geo, res_lon_geo, res_lat_geo,
                                                     self.driver_rf_model.domain_extension)
-                # Configure model time(s)
+                # configure model time(s)
                 self.driver_rf_model.configure_time(time_obj)
 
-                # Configure model data
-                self.driver_rf_model.configure_data(values_obj)
+                # configure model info
+                self.driver_rf_model.configure_info(info_obj)
 
-                # Ending info
+                # configure model data
+                self.driver_rf_model.configure_data(values_obj, info_obj)
+
+                # info end
                 log_stream.info(' ---> Model configuration ... DONE!')
 
             else:
-                # Ending info
+                # info end
                 log_stream.info(' ---> Model configuration ... SKIPPED! Results are saved during previously executions!')
 
         else:
-            # Ending info
+            # info end
             log_stream.info(' ---> Model configuration ... SKIPPED! DATA INPUT NOT FOUND!')
         # -------------------------------------------------------------------------------------
 

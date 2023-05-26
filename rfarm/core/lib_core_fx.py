@@ -152,11 +152,20 @@ def agg_xyt(zi, nax, nay, nat):
         xdim = int(nx / nax)
         ydim = int(ny / nay)
         tdim = int(nt / nat)
+
         rx = np.arange(0, nx, xdim)
         ry = np.arange(0, ny, ydim)
         rt = np.arange(0, nt, tdim)
-        xz = np.zeros((nax, nay, nat))
 
+        #Correzione Francesco 28042023
+        if (xdim < nx / nax):
+            rx = np.arange(0, nx-xdim, xdim)
+        if (ydim < ny/nay):
+            ry = np.arange(0, ny - ydim, ydim)
+        if (tdim < nt/nat):
+            rt = np.arange(0, nt - tdim, tdim)
+
+        xz = np.zeros((nax, nay, nat))
         rx_len = rx.__len__()
         ry_len = ry.__len__()
         rt_len = rt.__len__()
@@ -250,6 +259,13 @@ def interpola_xyt(z, nx, ny, nt):
     rx = np.arange(0, nx, xdim).astype('int32')
     ry = np.arange(0, ny, ydim).astype('int32')
     rt = np.arange(0, nt, tdim).astype('int32')
+    # Correzione Francesco 28042023
+    if (xdim < nx / nax):
+        rx = np.arange(0, nx - xdim, xdim)
+    if (ydim < ny / nay):
+        ry = np.arange(0, ny - ydim, ydim)
+    if (tdim < nt / nat):
+        rt = np.arange(0, nt - tdim, tdim)
 
     zi = np.zeros((nx,ny,nt))
 

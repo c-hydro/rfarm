@@ -2,8 +2,8 @@
   "algorithm":{
     "flags": {
       "cleaning_static_data": false,
-      "cleaning_dynamic_ancillary_in": false,
-      "cleaning_dynamic_ancillary_out": false,
+      "cleaning_dynamic_ancillary_in": true,
+      "cleaning_dynamic_ancillary_out": true,
       "cleaning_dynamic_out": true,
       "cleaning_dynamic_tmp": true,
       "zipping_dynamic_out": true
@@ -17,18 +17,19 @@
       "title": "RFarm Model",
       "web-site": "",
       "source": "Python library developed by CIMA Research Foundation",
-      "history": "4.0.3 [20210503]",
+      "history": "4.4.0 [20230526]",
       "project-info": "Rainfarm Library",
       "algorithm": "Processing tool developed by CIMA Research Foundation"
     },
     "parameters": {
-      "ensemble": {"start": 1, "end": 1},
+      "__comment__": "CTsf = 2 --> 10800*2 = 21600 = 6 ore",
+      "ensemble": {"start": 1, "end": 3},
       "ratio_s": 4,
       "ratio_t": 3,
       "slope_s": null,
       "slope_t": null,
-      "cs_sf": 4,
-      "ct_sf": 1,
+      "cs_sf": 2,
+      "ct_sf": 2,
       "multi_core": false,
       "domain_extension": 0,
       "tmp": true
@@ -39,17 +40,17 @@
       "land": {
         "terrain_data": {
           "filename": "marche.dem.txt",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_static/gridded/"
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/data_static/gridded/"
         },
         "grid_data": {
-          "filename": "rfarm_lami-2i_grid.workspace",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_static/ancillary/rfarm/lami-2i/"
+          "filename": "rfarm_ecmwf0100_grid.workspace",
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/data_static/ancillary/ecmwf0100/"
         }
       },
       "colormap": {
         "rain_colormap" : {
           "filename": null,
-          "folder" : "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_static/colormap/"
+          "folder" : "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/data_static/colormap/"
         }
       }
     },
@@ -61,7 +62,7 @@
         "ensemble": "{:03d}"
       },
       "time": {
-        "time_forecast_period": 48,
+        "time_forecast_period": 84,
         "time_forecast_frequency": "H",
         "time_observed_period": 0,
         "time_observed_frequency": "H",
@@ -69,33 +70,33 @@
       },
       "input": {
         "rain_input_data": {
-          "__comment__": "20181220-lami-2i.t00z.PRECI1",
-          "filename": "{datetime_input}-lami-2i.t00z.PRECI1",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_dynamic/source/nwp//lami-2i/"
+          "__comment__": "20201116-ecmwf.t00z.PRECI3",
+          "filename": "{datetime_input}-ecmwf0100.t00z.PRECI3",
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/data_dynamic/source/nwp/ecmwf0100/"
         },
         "rain_input_ancillary" : {
-          "filename" : "nwp_lami-2i_precipitation1h_{datetime_input}.workspace",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_dynamic/ancillary/rfarm/lami-2i/{sub_path_time}/"
+          "filename" : "nwp_ecmwf0100_precipitation3h_{datetime_input}.workspace",
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/data_dynamic/ancillary/ecmwf0100/{sub_path_time}/"
         }
       },
       "outcome": {
         "rain_outcome_ancillary": {
-          "filename": "rfarm_lami-2i_{datetime_outcome}_{ensemble}.workspace",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_dynamic/ancillary/rfarm/lami-2i/{sub_path_time}/"
+          "filename": "rfarm_ecmwf0100_{datetime_outcome}_{ensemble}.workspace",
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/data_dynamic/ancillary/ecmwf0100/{sub_path_time}/"
         },
         "rain_outcome_data": {
-          "filename": "rfarm.lami-2i.{datetime_outcome}_{ensemble}.nc",
-          "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_dynamic/outcome/rfarm/lami-2i/{sub_path_time}/{ensemble}/"
+          "filename": "rfarm.ecmwf0100.{datetime_outcome}_{ensemble}.nc",
+          "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/data_dynamic/outcome/ecmwf0100/{sub_path_time}/{ensemble}/"
         }
       }
     },
     "log": {
-        "filename": "rfarm_lami-2i_log.txt",
-        "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/log/rfarm/"
+        "filename": "rfarm_ecmwf0100_log.txt",
+        "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/log/"
     },
     "temp": {
         "filename": null,
-        "folder": "/home/fabio/Desktop/PyCharm_Workspace/hyde-ws/marche/data_tmp/rfarm/"
+        "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_marche/tmp/"
     },
     "library": {
       "filename": "",
@@ -107,7 +108,7 @@
     }
   },
   "time": {
-    "time_now": "201812210000",
+    "time_now": null,
     "time_period": 0,
     "time_frequency": "D",
     "time_rounding": "D"
@@ -116,8 +117,8 @@
     "input": {
       "rain_data": {
         "id": {
-          "var_type": ["var3d", "instantaneous"],
-          "var_source": "lami_2i",
+          "var_type": ["var3d", "accumulated"],
+          "var_source": "ecmwf0100",
           "var_format": "grib",
           "var_name": "tp",
           "var_file": "rain_data",
@@ -125,13 +126,14 @@
           "var_parameters": null
         },
         "attributes": {
-          "long_name": "",
+          "__comment__" : "mm == kg m**-2",
+          "long_name": "Total precipitation (3_Hour Accumulation) @ Ground or water surface'",
           "standard_name": "total_precipitation",
           "Missing_value": -9999.0,
           "_FillValue": -9999.0,
-          "ScaleFactor": 1,
+          "ScaleFactor": 0.001,
           "Valid_range": [0, null],
-          "units": "kg m**-2",
+          "units": "m",
           "description": ""
         }
       }
@@ -145,11 +147,10 @@
           "var_name": "Rain",
           "var_file": "rfarm_data",
           "var_colormap": null,
-          "var_parameters": null,
-          "var_frequency": "H"
+          "var_parameters": null
         },
         "attributes": {
-          "long_name": "",
+          "long_name": "Total precipitation (1_Hour Accumulation) @ Ground or water surface",
           "standard_name": "total_precipitation",
           "Missing_value": -9999.0,
           "_FillValue": -9999.0,

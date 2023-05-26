@@ -4,15 +4,13 @@ Library Features:
 Name:           lib_core_generic
 Author(s):      Fabio Delogu (fabio.delogu@cimafoundation.org)
                 Mirko D'Andrea (mirko.dandrea@cimafoundation.org)
-Date:           '20190905'
-Version:        '3.5.2'
+Date:           '20230519'
+Version:        '3.5.3'
 """
 
 #######################################################################################
 # Logging
 import logging
-
-import datetime
 import math
 import os
 import pickle
@@ -22,7 +20,6 @@ import pandas as pd
 import xarray as xr
 
 from copy import deepcopy
-from osgeo import gdal, gdalconst
 
 import cartopy
 
@@ -45,57 +42,44 @@ log_stream = logging.getLogger(logger_name)
 
 # -------------------------------------------------------------------------------------
 # Method to check if number is odd or even
-def checkMod(iNum, iDiv):
+def check_mod(num, div):
     # Return True or False, depending on if the input number is odd. 
     # Odd numbers are 1, 3, 5, 7, and so on. 
     # Even numbers are 0, 2, 4, 6, and so on.
-    
-    iMod = iNum % iDiv
-     
-    return iMod
+    return num % div
 # -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
-# Method to convert decimal degrees to km (2)
-def convertDeg2Km_2(deg, lat=None):
-
+# method to convert decimal degrees to km (2)
+def convert_deg2km_2(deg, lat=None):
     if lat is None:
         km = deg * 110.54
     else:
         km = deg * 111.32 * np.cos(np.deg2rad(lat))
     return km
-
 # -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
-# Method to convert decimal degrees to km (1)
-def convertDeg2Km(deg): 
-    
-    # Earth radius
-    dRE = 6378.1370 
-    km = deg * (np.pi * dRE) / 180
+# method to convert decimal degrees to km (1)
+def convert_deg2km(deg, earth_radius=6378.1370):
+    km = deg * (np.pi * earth_radius) / 180
     return km
-
 # -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
-# Method to convert km to decimal degrees
-def convertKm2Deg(km): 
-    
-    # Earth radius
-    dRE = 6378.1370 
-    deg = 180 * km / (np.pi * dRE)
+# method to convert km to decimal degrees
+def convert_km2deg(km, earth_radius=6378.1370):
+    deg = 180 * km / (np.pi * earth_radius)
     return deg
-
 # -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
 # Method to find closest point
-def findClosestIndex(a2dGeoX, a2dGeoY, dGeoX, dGeoY):
+def find_closest_idx(a2dGeoX, a2dGeoY, dGeoX, dGeoY):
 
     # -------------------------------------------------------------------------------------
     # Compute distance
@@ -119,47 +103,51 @@ def findClosestIndex(a2dGeoX, a2dGeoY, dGeoX, dGeoY):
 
 
 # -------------------------------------------------------------------------------------
-# Method to compute ensemble(s)
-def computeEnsemble(iEnsStart=1, iEnsEnd=1):
+# method to compute ensemble(s)
+def compute_ensemble(ensemble_start=1, ensemble_end=1):
 
-    # Get ensemble information
-    iEnsTot = iEnsEnd - iEnsStart + 1
+    if ensemble_start > ensemble_end:
+        log_stream.warning(' ===> Variable "ensemble_start" must be less than "ensemble_end"!'
+                           ' Both "ensemble_start" and "ensemble_end" will be set to 1 default value!')
+        ensemble_start, ensemble_end = 1, 1
 
-    if iEnsStart > iEnsEnd:
-        log_stream.warning(' ====> ensemble min tag > ensemble max tag! Set to 1 default run!')
-        iEnsStart, iEnsEnd, iEnsTot = 1, 1, 1
-    else:
-        pass
+    ensemble_range_array = np.arange(ensemble_start, ensemble_end + 1, 1)
+    ensemble_range_list = [int(ens) for ens in ensemble_range_array]
 
-    a1iEnsRange = np.arange(iEnsStart, iEnsEnd + 1, 1)
-    a1oEnsRange = [iEns for iEns in a1iEnsRange]
-
-    return a1oEnsRange
+    return ensemble_range_list
 
 # -------------------------------------------------------------------------------------
 
 
 # --------------------------------------------------------------------------------------
-# Method to select variable field(s)
-def computeVar(a3dDataXYT_IN, iTimeRatio_RF,
-               iIMin_RF, iIMax_RF, iJMin_RF, iJMax_RF):
+# method to select variable field(s)
+def compute_var(data_xyt_in, time_ratio_rf,
+                idx_i_min_rf, idx_i_max_rf, idx_j_min_rf, idx_j_max_rf,
+                data_limit_lower=0.01, data_limit_upper=None,
+                data_value_lower=0, data_value_upper=None):
     
-    # RF 3D fields in XYT dimensions
-    a3dDataXYT_RF = a3dDataXYT_IN[iIMin_RF: iIMax_RF + 1, iJMin_RF: iJMax_RF + 1, :]
-    # Check data limits (just in case)
-    a3dDataXYT_RF[a3dDataXYT_RF < 0.01] = 0
-    # Convert from accumulated rain to instantaneous rain
-    a3dDataXYT_RF = a3dDataXYT_RF/float(iTimeRatio_RF)
+    # compute rainfarm data in XYT dimensions
+    data_xyt_rf = data_xyt_in[idx_i_min_rf: idx_i_max_rf + 1, idx_j_min_rf: idx_j_max_rf + 1, :]
+    # apply data limits
+    if data_limit_lower is not None:
+        if data_value_lower is not None:
+            data_xyt_rf[data_xyt_rf < data_limit_lower] = data_value_lower
+    if data_limit_upper is not None:
+        if data_value_upper is not None:
+            data_xyt_rf[data_xyt_rf > data_limit_upper] = data_value_upper
 
-    return a3dDataXYT_RF
+    # convert from accumulated to instantaneous data
+    data_xyt_rf = data_xyt_rf/float(time_ratio_rf)
+
+    return data_xyt_rf
 # -------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
 # Method to extend reference grid
-def extendGrid(a2dGeoX_IN, a2dGeoY_IN, 
-               a2dGeoX_REF, a2dGeoY_REF, dGeoXStep_REF, dGeoYStep_REF, 
-               dGeoKm_EXT):
+def extend_grid(a2dGeoX_IN, a2dGeoY_IN,
+                a2dGeoX_REF, a2dGeoY_REF, dGeoXStep_REF, dGeoYStep_REF,
+                dGeoKm_EXT):
 
     # -------------------------------------------------------------------------------------
     # Check EXT definition
@@ -230,7 +218,7 @@ def extendGrid(a2dGeoX_IN, a2dGeoY_IN,
         dGeoDeg_EXT = 0.0
         # -------------------------------------------------------------------------------------
 
-        # -------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------
     # Info
     dGeoXMin_EXT = np.min(a2dGeoX_EXT)
     dGeoXMax_EXT = np.max(a2dGeoX_EXT)
@@ -259,9 +247,9 @@ def extendGrid(a2dGeoX_IN, a2dGeoY_IN,
 
 # -------------------------------------------------------------------------------------
 # Method to create RF grid
-def computeGrid(a2dGeoX_IN, a2dGeoY_IN,
-                a2dGeoX_REF, a2dGeoY_REF, dGeoXStep_REF, dGeoYStep_REF,
-                iRatioS):
+def compute_grid(a2dGeoX_IN, a2dGeoY_IN,
+                 a2dGeoX_REF, a2dGeoY_REF, dGeoXStep_REF, dGeoYStep_REF,
+                 iRatioS):
 
     # -------------------------------------------------------------------------------------
     # Check grid orientation
@@ -321,9 +309,9 @@ def computeGrid(a2dGeoX_IN, a2dGeoY_IN,
         # ==> Grids are different
         log_stream.info(' -------> Grid IN != Grid REF')
         # Lower Left Corner
-        iIMax_REF, iJMin_REF = findClosestIndex(a2dGeoX_IN, a2dGeoY_IN, dGeoXMin_REF, dGeoYMin_REF)
+        iIMax_REF, iJMin_REF = find_closest_idx(a2dGeoX_IN, a2dGeoY_IN, dGeoXMin_REF, dGeoYMin_REF)
         # Upper Right Corner
-        iIMin_REF, iJMax_REF = findClosestIndex(a2dGeoX_IN, a2dGeoY_IN, dGeoXMax_REF, dGeoYMax_REF)
+        iIMin_REF, iJMax_REF = find_closest_idx(a2dGeoX_IN, a2dGeoY_IN, dGeoXMax_REF, dGeoYMax_REF)
         
         # Check corner(s)
         if a2dGeoX_IN[iIMax_REF, iJMin_REF] > dGeoXMin_REF:
@@ -389,11 +377,9 @@ def computeGrid(a2dGeoX_IN, a2dGeoY_IN,
     # iJMax_RF = iJMin_REF + (iNPixels - 1)
 
     # Extend method to search grid index
-    [iIMin_RF, iIMax_RF, 
-     iJMin_RF, iJMax_RF,
-     iNPixels_RF, iResolution_RF] = searchGridIndex(iIMax_REF, iJMin_REF, 
-                                                    a2dGeoX_REF.shape[0], a2dGeoY_REF.shape[1],
-                                                    iNPixels_REF, iRatioS)
+    [iIMin_RF, iIMax_RF, iJMin_RF, iJMax_RF,
+        iNPixels_RF, iResolution_RF] = search_grid_index(
+        iIMax_REF, iJMin_REF, a2dGeoX_REF.shape[0], a2dGeoY_REF.shape[1], iNPixels_REF, iRatioS)
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
@@ -426,7 +412,7 @@ def computeGrid(a2dGeoX_IN, a2dGeoY_IN,
         pass
 
     # Compute grid indexes using nearest interpolation
-    a2iIndex_RF = lib_regrid.gridIndex(a2dGeoX_RF, a2dGeoY_RF, a2dGeoX_REF, a2dGeoY_REF)
+    a2iIndex_RF = lib_regrid.compute_grid_index(a2dGeoX_RF, a2dGeoY_RF, a2dGeoX_REF, a2dGeoY_REF)
     
     # Info
     log_stream.info(' -------> Grid IN -- GeoXMin: ' + str(dGeoXMin_IN) + ' GeoXMax: ' + str(dGeoXMax_IN) +
@@ -450,9 +436,9 @@ def computeGrid(a2dGeoX_IN, a2dGeoY_IN,
 
 # --------------------------------------------------------------------------------
 # Method to compute volume 
-def computeVolume(a2dGeoX_IN, a2dGeoY_IN, a2dGeoX_REF, a2dGeoY_REF, a2dGeoX_RF, a2dGeoY_RF,
-                  iIMin_RF, iIMax_RF, iJMin_RF, iJMax_RF,
-                  sPathCache):
+def compute_volume(a2dGeoX_IN, a2dGeoY_IN, a2dGeoX_REF, a2dGeoY_REF, a2dGeoX_RF, a2dGeoY_RF,
+                   iIMin_RF, iIMax_RF, iJMin_RF, iJMax_RF,
+                   sPathCache):
     
     # --------------------------------------------------------------------------------
     # Initialize GeoX and GeoY to volume control
@@ -468,8 +454,6 @@ def computeVolume(a2dGeoX_IN, a2dGeoY_IN, a2dGeoX_REF, a2dGeoY_REF, a2dGeoX_RF, 
         # Create cache folder 
         if not os.path.isdir(sPathCache):
             os.makedirs(sPathCache)
-        else:
-            pass
         # --------------------------------------------------------------------------------
         
         # --------------------------------------------------------------------------------
@@ -533,48 +517,8 @@ def computeVolume(a2dGeoX_IN, a2dGeoY_IN, a2dGeoX_REF, a2dGeoY_REF, a2dGeoX_RF, 
 
 
 # -------------------------------------------------------------------------------------
-# Method to compute time steps
-def computeTimeSteps(sTimeFrom, sTimeTo, iTimeDelta_IN, iTimeDelta_OUT, sTimeFormat='%Y%m%d%H%M'):
-
-    # -------------------------------------------------------------------------------------
-    # Get time from and time to information
-    oTimeFrom = datetime.datetime.strptime(sTimeFrom, sTimeFormat)
-    oTimeTo = datetime.datetime.strptime(sTimeTo, sTimeFormat)
-
-    oTimeDelta_IN = datetime.timedelta(seconds=iTimeDelta_IN)
-    oTimeDelta_OUT = datetime.timedelta(seconds=iTimeDelta_OUT)
-    # -------------------------------------------------------------------------------------
-
-    # -------------------------------------------------------------------------------------
-    # Compute initial step
-    oTimeStep = oTimeFrom - oTimeDelta_IN
-    oTimeStep = oTimeStep + oTimeDelta_OUT
-    
-    # Compute time steps OUT
-    a1oTimeSteps = []
-    while oTimeStep <= oTimeTo:
-        a1oTimeSteps.append(oTimeStep.strftime(sTimeFormat))
-        oTimeStep += oTimeDelta_OUT
-
-    # -------------------------------------------------------------------------------------
-
-    # -------------------------------------------------------------------------------------
-    # Info
-    sTimeFrom = a1oTimeSteps[0]
-    sTimeTo = a1oTimeSteps[-1]
-    log_stream.info(' -------> Time -- From: ' + sTimeFrom + ' To: ' + str(sTimeTo))
-    
-    # Return variable(s)
-    return a1oTimeSteps
-    # -------------------------------------------------------------------------------------
-    
-# -------------------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------------
-# Method to define grid index
-def searchGridIndex(iIMax_REF, iJMin_REF, iRows_REF, iCols_REF, iNPixels, 
-                    iRatioS):
+# method to search grid index
+def search_grid_index(iIMax_REF, iJMin_REF, iRows_REF, iCols_REF, iNPixels, iRatioS):
 
     # -------------------------------------------------------------------------------------
     # Define IJ CUT indexes
@@ -586,8 +530,8 @@ def searchGridIndex(iIMax_REF, iJMin_REF, iRows_REF, iCols_REF, iNPixels,
     # Check mod
     iIDelta_RF = iIMax_RF - iIMin_RF + 1
     iJDelta_RF = iJMax_RF - iJMin_RF + 1
-    iIMod_RF = checkMod(iIDelta_RF, iRatioS)
-    iJMod_RF = checkMod(iJDelta_RF, iRatioS)
+    iIMod_RF = check_mod(iIDelta_RF, iRatioS)
+    iJMod_RF = check_mod(iJDelta_RF, iRatioS)
     
     # Info
     log_stream.info(' -------> Grid RF Index -- Initial Values -- IMin: ' + str(iIMin_RF) + ' IMax: ' + str(iIMax_RF) +
@@ -616,7 +560,7 @@ def searchGridIndex(iIMax_REF, iJMin_REF, iRows_REF, iCols_REF, iNPixels,
         ' -------> Grid RF Index -- After corrections for FFT -- IMin: ' + str(iIMin_RF) + ' IMax: ' + str(iIMax_RF) +
         ' JMin: ' + str(iJMin_RF) + ' JMax: ' + str(iJMax_RF))
     # --------------------------------------------------------------------------------------
-    # '''
+
     # --------------------------------------------------------------------------------------
     # Check if grid CUT is included in grid IN (squared grid) --> latitude and longitude adjustment
     # This section has unfixed bug(s) for >= conditions -->
@@ -627,6 +571,7 @@ def searchGridIndex(iIMax_REF, iJMin_REF, iRows_REF, iCols_REF, iNPixels,
     else:
         pass
 
+    ''' mod francesco silvestro 2023-05-05
     iIDiff_RF = iIMax_RF - iIMin_RF + 1
     if iIDiff_RF >= iCols_REF:
         iIMaxShift_RF = iIMax_RF - (iCols_REF - 1)
@@ -635,7 +580,7 @@ def searchGridIndex(iIMax_REF, iJMin_REF, iRows_REF, iCols_REF, iNPixels,
         log_stream.warning(' ====> Unfixed index I condition. Check your case at this point!')
     else:
         pass
-    
+    '''
     if iJMin_RF < 0:
         iJMinShift_RF = -iJMin_RF
         iJMin_RF = iJMin_RF + iJMinShift_RF
@@ -643,6 +588,7 @@ def searchGridIndex(iIMax_REF, iJMin_REF, iRows_REF, iCols_REF, iNPixels,
     else:
         pass
 
+    ''' mod francesco silvestro 2023-05-05
     iJDiff_RF = iJMax_RF - iJMin_RF + 1
     if iJDiff_RF >= iRows_REF:
         iJMaxShift_RF = iJMax_RF - (iRows_REF - 1)
@@ -651,12 +597,13 @@ def searchGridIndex(iIMax_REF, iJMin_REF, iRows_REF, iCols_REF, iNPixels,
         log_stream.warning(' ====> Unfixed index J condition. Check your case at this point!')
     else:
         pass
-    
+    '''
+
     # Check mod
-    #iIDelta_RF = iIMax_RF - iIMin_RF + 1
-    #iJDelta_RF = iJMax_RF - iJMin_RF + 1
-    #iIMod_RF = checkMod(iIDelta_RF, iRatioS)
-    #iJMod_RF = checkMod(iJDelta_RF, iRatioS)
+    # iIDelta_RF = iIMax_RF - iIMin_RF + 1
+    # iJDelta_RF = iJMax_RF - iJMin_RF + 1
+    # iIMod_RF = checkMod(iIDelta_RF, iRatioS)
+    # iJMod_RF = checkMod(iJDelta_RF, iRatioS)
     
     # Info
     log_stream.info(
@@ -667,6 +614,7 @@ def searchGridIndex(iIMax_REF, iJMin_REF, iRows_REF, iCols_REF, iNPixels,
     # --------------------------------------------------------------------------------------
     # Compute grid index taking care spatial disaggregation factor
     # I index
+    ''' mod francesco silvestro 2023-05-02
     while iIDelta_RF % iRatioS != 0:
         
         if iIMax_RF < iCols_REF:
@@ -705,7 +653,7 @@ def searchGridIndex(iIMax_REF, iJMin_REF, iRows_REF, iCols_REF, iNPixels,
         log_stream.warning(' ====> grid RF is not divisible to spatial resolution! Check grid RF!')
     else:
         pass
-    
+    '''
     # Info
     log_stream.info(' -------> Grid RF Index -- Final Values -- IMin: ' + str(iIMin_RF) + ' IMax: ' + str(iIMax_RF) +
                     ' JMin: ' + str(iJMin_RF) + ' JMax: ' + str(iJMax_RF))
@@ -726,56 +674,24 @@ def searchGridIndex(iIMax_REF, iJMin_REF, iRows_REF, iCols_REF, iNPixels,
 
 
 # --------------------------------------------------------------------------------------
-# Method to check disaggregated result(s)
-def checkResult(a3dData_IN, a3Data_RF, iXScale, iTScale):
+# method to check disaggregated result(s)
+def check_result(data_in, data_rf, x_scale, t_scale):
 
-    # Scale factor(s)
-    iYScale = iXScale
+    # x, y scale factors
+    y_scale = deepcopy(x_scale)
+    # accumulated data in and disaggregation volume(s)
+    data_in_acc = np.sum(np.sum(np.sum(data_in))) * x_scale * y_scale * t_scale
+    data_rf_acc = np.sum(np.sum(np.sum(data_rf)))
 
-    # Check volume disaggregation
-    dData_IN_ACC = np.sum(np.sum(np.sum(a3dData_IN))) * iXScale * iYScale * iTScale
-    dData_RF_ACC = np.sum(np.sum(np.sum(a3Data_RF)))
-
-    # Info
-    log_stream.info(' -------> Check X VOLUME: X_IN: ' + str(dData_IN_ACC) + ' X_RF: ' + str(dData_RF_ACC))
+    # volume info
+    log_stream.info(' -------> Check X VOLUME: X_IN: ' + str(data_in_acc) + ' X_RF: ' + str(data_rf_acc))
 
 # --------------------------------------------------------------------------------------
 
 
 # -------------------------------------------------------------------------------------
-# Method to write geotiff file
-def writeGeoTiff(file_name, map_data, map_geo_x, map_geo_y, map_n=1,
-                 map_metadata=None, map_proj='EPSG:4326', map_format=gdalconst.GDT_Float32):
-
-    # map metadata
-    if map_metadata is None:
-        map_metadata = {'description_field': 'data'}
-
-    # map geotransform
-    map_high = map_data.shape[0]
-    map_wide = map_data.shape[1]
-    map_x_min, map_y_min, map_x_max, map_y_max = [map_geo_x.min(), map_geo_y.min(), map_geo_x.max(), map_geo_y.max()]
-    map_x_res = (map_x_max - map_x_min) / float(map_high)
-    map_y_res = (map_y_max - map_y_min) / float(map_wide)
-    map_geotransform = (map_x_min, map_x_res, 0, map_y_max, 0, -map_y_res)
-
-    # map handle
-    map_handle = gdal.GetDriverByName('GTiff').Create(
-        file_name, map_wide, map_high, map_n, map_format, options=['COMPRESS=DEFLATE'])
-    # map geographical info
-    map_handle.SetGeoTransform(map_geotransform)
-    map_handle.SetProjection(map_proj)
-    # map data
-    map_handle.GetRasterBand(1).WriteArray(map_data)
-    map_handle.GetRasterBand(1).SetMetadata(map_metadata)
-
-    del map_handle
-# -------------------------------------------------------------------------------------
-
-
-# -------------------------------------------------------------------------------------
-# Method to plot result
-def plotResult(map_value, map_geo_x, map_geo_y):
+# method to plot result
+def plot_result(map_value, map_geo_x, map_geo_y):
 
     map_x_west = np.min(map_geo_x)
     map_x_east = np.max(map_geo_x)
@@ -820,16 +736,97 @@ def plotResult(map_value, map_geo_x, map_geo_y):
 
 
 # -------------------------------------------------------------------------------------
-# Method to save model result(s)
-def saveResult(filename, varname, data_in,
-               geox_in, geoy_in, time_in,
-               geox_out, geoy_out, time_out,
-               geoindex_in=None):
+# method to save model result(s)
+def save_result_expert_forecast(file_name, var_name, var_data_in, var_time, var_geo_x, var_geo_y):
+
+    # initialize output datasets
+    var_data_out = np.zeros(shape=[var_time.__len__(), var_geo_x.shape[0], var_geo_y.shape[1]])
+
+    # iterate over time-steps
+    for time_idx, time_step in enumerate(sorted(var_time)):
+        # get data 2d from the input datasets
+        var_data_step = var_data_in[:, :, time_idx]
+        # put data 2d to the output datasets
+        var_data_out[time_idx, :, :] = var_data_step
+
+        '''
+        # debug
+        plt.figure()
+        plt.imshow(var_data_in[:, :, time_idx], interpolation=None)
+        plt.colorbar()
+        plt.figure()
+        plt.imshow(var_data_out[time_idx, :, :], interpolation=None)
+        plt.colorbar()
+        plt.show()
+        '''
+
+    # Create a data array
+    var_time_idx = pd.to_datetime(var_time)
+    var_da_out = xr.DataArray(var_data_out, name=var_name,
+                              dims=['time', 'south_north', 'west_east'],
+                              coords={
+                                  'time': (['time'], var_time_idx),
+                                  'longitude': (['south_north', 'west_east'], var_geo_x),
+                                  'latitude': (['south_north', 'west_east'], np.flipud(var_geo_y))})
+
+    # Save data in tmp file to free memory
+    with open(file_name, 'wb') as file_handle:
+        pickle.dump(var_da_out, file_handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+# --------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
+# method to save model result(s)
+def save_result_nwp(filename, varname,
+                data_in, geox_in, geoy_in, time_in,
+                geox_out, geoy_out, time_out,
+                geoindex_in=None):
 
     # -------------------------------------------------------------------------------------
-    # Compute time accumulation ratio
-    time_ratio_agg = time_in.__len__() / time_out.__len__()
+    # organize time information
+    time_common_in = None
+    time_ratio_list, time_len_in_list, time_len_out_list = [], [], []
+    for (key_in, time_in_step), (key_out, time_out_step) in zip(
+            time_in.items(), time_out.items()):
 
+        assert key_in == key_out, 'The input, the output and the info keys must be the same'
+
+        time_len_in_step, time_len_out_step, = time_in_step.__len__(), time_out_step.__len__()
+
+        time_ratio_step = time_len_in_step / time_len_out_step
+        time_len_in_list.append(time_len_in_step)
+        time_len_out_list.append(time_len_out_step)
+        time_ratio_list.append(time_ratio_step)
+
+        if time_common_in is None:
+            time_common_in = deepcopy(time_in_step)
+        else:
+            if time_in_step != time_common_in:
+                log_stream.error(' ===> The time list must be the same')
+                raise NotImplemented('Case not implemented yet')
+
+    time_len_in = list(set(time_len_in_list))
+    time_len_out = list(set(time_len_out_list))
+    time_ratio = list(set(time_ratio_list))
+    if time_len_in.__len__() == 1:
+        time_len_in = time_len_in[0]
+    else:
+        log_stream.error(' ===> The time length of input data is in unsupported format')
+        assert NotImplemented('Case not implemented yet')
+    if time_len_out.__len__() == 1:
+        time_len_out = time_len_out[0]
+    else:
+        log_stream.error(' ===> The time length of output data is in unsupported format')
+        assert NotImplemented('Case not implemented yet')
+    if time_ratio.__len__() == 1:
+        time_ratio_agg = time_ratio[0]
+    else:
+        log_stream.error(' ===> The time ratio between input and output data is in unsupported format')
+        assert NotImplemented('Case not implemented yet')
+    # -------------------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------------------
     # Counter(s)
     time_idx_agg = 1
     time_idx_out = 0
@@ -837,12 +834,12 @@ def saveResult(filename, varname, data_in,
     time_steps_out = []
 
     data_agg = np.zeros([geox_out.shape[0], geoy_out.shape[1]])
-    data_out = np.zeros([time_out.__len__(), geox_out.shape[0], geoy_out.shape[1], ])
+    data_out = np.zeros([time_len_out, geox_out.shape[0], geoy_out.shape[1], ])
     # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
     # Cycle(s) over time step(s)
-    for time_idx_in, time_step_in in enumerate(sorted(time_in)):
+    for time_idx_in, time_step_in in enumerate(sorted(time_common_in)):
 
         # -------------------------------------------------------------------------------------
         # Get data
