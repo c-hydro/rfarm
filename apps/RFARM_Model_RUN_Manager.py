@@ -14,7 +14,7 @@ General command line:
 python3 RFARM_Model_RUN_Manager.py -settings_file configuration.json -time "YYYY-MM-DD HH:MM"
 
 Version(s):
-20230526 (4.4.0) --> RainFarm package for Liguria operational chain - expert forecast; fix bugs
+20230526 (4.4.0) --> RainFarm package for Liguria operational chain - expert forecast; add expert forecast converter; fix bugs
 20221219 (4.3.0) --> RainFarm package (refactor from hyde previous versions); fix bugs
 20210503 (4.0.3) --> Add gfs025 routines
 20210202 (4.0.2) --> Adapt scripts and fix bugs; add expert forecast routines
@@ -34,7 +34,7 @@ import logging
 from argparse import ArgumentParser
 from time import time, strftime, gmtime
 
-from rfarm.settings.lib_args import logger_formatter, logger_handle, logger_name
+from rfarm.settings.lib_args import logger_name
 
 from rfarm.configuration.drv_configuration_algorithm import DriverAlgorithm
 from rfarm.configuration.drv_configuration_time import DataTime

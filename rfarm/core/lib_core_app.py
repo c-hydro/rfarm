@@ -155,22 +155,16 @@ def exec_expert_forecast(X, xscale, tscale, cssf, ctsf, pth=0.25,
     log_stream.info(' ------> Run RF model (ExpertForecast Mode) ... ')
 
     # Nx and NY
-    if X is not None:
-        if X.ndim == 2:
-            nx, ny = X.shape
-            nt = nt
-        elif X.ndim == 3:
-            nx, ny, nt = X.shape
-        else:
-            log_stream.error(' ===> X datasets dimensions are not supported')
-            raise NotImplemented('Case not implemented yet')
-    elif X is None:
+    if X is None:
         X = np.float64(1.0)
         nx = nx
         ny = ny
         nt = nt
         cssf = nx
         ctsf = nt
+    else:
+        log_stream.error(' ===> ')
+        raise NotImplemented('Case not implemented yet')
 
     # exponential of gaussian curve
     alfa = 1
@@ -231,7 +225,7 @@ def exec_expert_forecast(X, xscale, tscale, cssf, ctsf, pth=0.25,
     # define rainfarm output fields
     if ca.ndim == 0:
         x = ca * g
-        x[np.where(x <= pth * X)] = 0.0
+        x[np.where(x <= pth)] = 0.0
     elif ca.ndim == 3:
         if celle3_rainfarm is None:
             cai = lib_core_fx.interpola_xyt(ca, nx * xscale, ny * xscale, nt * tscale)

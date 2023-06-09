@@ -9,7 +9,6 @@
       "zipping_dynamic_out": true
     },
     "ancillary": {
-      "__comment__": "out_format: [binary, netcdf]",
       "_comment_domain" : "regional_domain",
       "domain" : {
         "tag_domain_1": {"name": "alert_area_a",   "id": 1},
@@ -21,8 +20,7 @@
       },
       "write_engine": "netcdf4",
       "zip_format": ".gz",
-      "algorithm_mode": "exec_expert_forecast",
-      "out_format": "bin"
+      "algorithm_mode": "exec_expert_forecast"
     },
     "general": {
       "title": "RFarm Model",
@@ -43,7 +41,8 @@
       "ct_sf": 12,
       "multi_core": false,
       "domain_extension": 0,
-      "tmp": true
+      "tmp": true,
+      "rain_max_thr": 180
     }
   },
   "data": {

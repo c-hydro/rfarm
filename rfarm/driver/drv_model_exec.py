@@ -50,7 +50,8 @@ model_parameters_default = {
     'multi_core': False,                        # multi core process (False or True)
     'domain_extension': 0,      	            # domain extended buffer (min value = 0) [km]
     'folder_tmp': None,                         # tmp folder to store data
-    'filename_tmp': 'rf_{ensemble}.pkl'         # tmp filename to store data
+    'filename_tmp': 'rf_{ensemble}.pkl',        # tmp filename to store data
+    'rain_max_thr': 180                         # rain maximum threshold to limit unfair values due to wrong scales
 }
 # List of model available algorithm(s)
 model_algorithm_type = ['exec_nwp', 'exec_expert_forecast']
@@ -97,6 +98,7 @@ class RFarmModel:
                  domain_extension=model_parameters_default['domain_extension'],
                  folder_tmp=model_parameters_default['folder_tmp'],
                  filename_tmp=model_parameters_default['filename_tmp'],
+                 rain_max_thr=model_parameters_default['rain_max_thr'],
                  model_algorithm="exec_nwp",
                  model_var="Rain",
                  model_metagauss=None,
@@ -110,6 +112,7 @@ class RFarmModel:
         self.ct_sf = ct_sf
         self.multi_core = multi_core
         self.domain_extension = domain_extension
+        self.rain_max_thr = rain_max_thr
 
         if folder_tmp is None:
             self.folder_tmp = create_tmp(model_parameters_default['folder_tmp'])
@@ -524,6 +527,8 @@ class RFarmModel:
                 # get common and domain information
                 info_common = self.info_common
                 info_domain = self.info_domain
+                # get rain maximum threshold
+                rain_max_thr = self.rain_max_thr
 
                 # get alert area index
                 subdomain_mask = deepcopy(domain_mask)
@@ -610,8 +615,45 @@ class RFarmModel:
                         else:
                             ensemble_rf_weights = 0.0
 
+                        ensemble_rf_check = ensemble_rf_step[subdomain_idx, :] * ensemble_rf_weights
+
+                        # debug
+                        # rain_max_thr = 10.0
+
+                        # check fields limits
+                        log_stream.info(' --------> Check rainfarm fields limits ... ')
+                        idx_check = np.where(ensemble_rf_check > rain_max_thr)
+                        array_check = np.array(idx_check)
+                        if np.size(array_check, 1):
+                            ensemble_rf_check[ensemble_rf_check > rain_max_thr] = rain_max_thr
+                            ensemble_rf_avg_n = np.nanmean(ensemble_rf_check)
+                            ensemble_rf_weights_C = rain_avg / self.ratio_t / ensemble_rf_avg_n
+                            ensemble_rf_check_N = ensemble_rf_check/ensemble_rf_weights_C
+                            ensemble_rf_avg_nn = np.nanmean(ensemble_rf_check_N)
+                            ensemble_rf_weights_C = rain_avg / self.ratio_t / ensemble_rf_avg_nn
+                            ensemble_rf_check = ensemble_rf_check_N * ensemble_rf_weights_C
+                            rain_rf_max = np.nanmax(np.nanmax(ensemble_rf_check))
+                            rain_rf_mean = np.nanmean(np.nanmean(ensemble_rf_check))
+                            ensemble_rf_check[ensemble_rf_check > 1.1 * rain_max_thr] = 1.1 * rain_max_thr
+
+                            log_stream.info(' ::: Field Analysis ::: ')
+                            log_stream.info(' ::: RainThr: "' + '{:.1f}'.format(rain_max_thr) +
+                                            '" -- RainMax: "' + '{:.1f}'.format(rain_rf_max) +
+                                            '" -- RainAvg: "' + '{:.1f}'.format(rain_rf_mean) + '" ::: ')
+                            log_stream.info(' --------> Check rainfarm fields limits ...  DONE')
+
+                        else:
+
+                            rain_rf_max = np.nanmax(np.nanmax(ensemble_rf_check))
+                            rain_rf_mean = np.nanmean(np.nanmean(ensemble_rf_check))
+                            log_stream.info(' ::: Field Analysis ::: ')
+                            log_stream.info(' ::: RainThr: "' + '{:.1f}'.format(rain_max_thr) +
+                                            '" -- RainMax: "' + '{:.1f}'.format(rain_rf_max) +
+                                            '" -- RainAvg: "' + '{:.1f}'.format(rain_rf_mean) + '" ::: ')
+                            log_stream.info(' --------> Check rainfarm fields limits ... SKIPPED. NOTHING TO DO')
+
                         # normalize result(s) using weight(s)
-                        ensemble_rf_t[subdomain_idx, time_idx_start:time_idx_end] = ensemble_rf_step[subdomain_idx, :] * ensemble_rf_weights
+                        ensemble_rf_t[subdomain_idx, time_idx_start:time_idx_end] = ensemble_rf_check
 
                         # reshape results in XYT format
                         ensemble_rf_domain = np.reshape(ensemble_rf_t, [subdomain_shape[0], subdomain_shape[1], nat])

@@ -91,9 +91,14 @@ class ModelTime:
             time_end = time_forecast_range[-1]
         else:
             time_end = time_step
+        try:
+            time_range = pd.date_range(start=time_start, end=time_end,
+                                   #freq=time_observed_frequency, inclusive=time_closed)
+                                   freq=time_observed_frequency, closed=time_closed)
+        except:
+            me_range = pd.date_range(start=time_start, end=time_end,
+                                    freq=time_observed_frequency, inclusive=time_closed)
 
-        time_range = pd.date_range(start=time_start, end=time_end,
-                                   freq=time_observed_frequency, inclusive=time_closed)
         time_range = time_range.sort_values(return_indexer=False, ascending=time_ascending)
 
         time_obj = DataObj
@@ -150,6 +155,15 @@ class ModelRunner:
         self.tag_alert_area_data = tag_alert_area_data
 
         self.tag_model_algorithm = tag_model_algorithm
+
+        # add parameters not defined in the configuration file
+        if self.tag_model_algorithm == 'exec_expert_forecast':
+            if 'rain_max_thr' not in list(self.model_parameters.keys()):
+                log_stream.warning(' ===> Parameter "rain_max_thr" is not defined in the configuration file')
+                log_stream.warning(' ===> Parameter "rain_max_thr" set equal to 150 [mm]')
+                self.model_parameters['rain_max_thr'] = float(150)
+            else:
+                self.model_parameters['rain_max_thr'] = float(self.model_parameters['rain_max_thr'])
 
         folder_name_in = self.file_dict_in[self.tag_folder_name]
         file_name_in = self.file_dict_in[self.tag_file_name]
@@ -310,7 +324,8 @@ class ModelRunner:
             folder_tmp=self.folder_ancillary_out_raw,
             filename_tmp=self.filename_ancillary_out_raw,
             model_var=self.var_info_out['id']['var_name'],
-            model_algorithm=self.tag_model_algorithm
+            model_algorithm=self.tag_model_algorithm,
+            rain_max_thr=self.model_parameters['rain_max_thr'],
         )
 
         if 'var_frequency' in self.var_info_out['id']:

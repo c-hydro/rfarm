@@ -9,7 +9,7 @@ Version:       '3.0.0'
 #################################################################################
 # Library
 import logging
-
+import numpy as np
 from rfarm.settings.lib_args import logger_name
 
 log_stream = logging.getLogger(logger_name)
