@@ -96,6 +96,17 @@ def compute_rain_lami_2i(var_data_in, var_units='mm', var_type='accumulated'):
 
 
 # -------------------------------------------------------------------------------------
+# Method to compute moloc rain
+def compute_rain_moloc(var_dset, var_name,
+                       var_time=None, var_geo_x=None, var_geo_y=None,
+                       var_units=None, var_step_type=None):
+
+    print('ciao')
+
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
 # Method to compute wrf rain
 def compute_rain_wrf(var_dset, var_name,
                      var_time=None, var_geo_x=None, var_geo_y=None,

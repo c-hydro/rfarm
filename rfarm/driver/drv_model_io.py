@@ -29,8 +29,11 @@ from rfarm.io.lib_io_dst_netcdf import create_dset_nc, write_dset_nc
 from rfarm.io.lib_io_dst_binary import write_dset_binary
 from rfarm.io.lib_io_src_grib import read_data_lami_2i, read_data_ecmwf_0100
 from rfarm.io.lib_io_src_grib import adjust_data_lami_2i, adjust_data_ecmwf_0100
-from rfarm.io.lib_io_src_netcdf import read_data_wrf
-from rfarm.io.lib_io_src_netcdf import convert_data_wrf, convert_time_wrf, read_data_gfs_025
+from rfarm.io.lib_io_src_netcdf import read_data_wrf, read_data_gfs_025
+from rfarm.io.lib_io_src_netcdf import convert_data_wrf, convert_time_wrf
+from rfarm.io.lib_io_src_tiff import read_data_moloc
+from rfarm.io.lib_io_src_tiff import convert_data_moloc
+
 from rfarm.io.lib_io_src_json import read_data_expert_forecast, configure_data_expert_forecast
 
 # from rfarm.core.lib_core_generic import plotResult
@@ -416,15 +419,37 @@ class RFarmData:
                     log_stream.error(' ----> Get data ... FAILED! FILE SOURCE LIBRARY NOT ALLOWED!')
                     raise NotImplementedError('GRIB datasets type not implemented yet')
 
+            elif self.file_format_data == 'tiff' or self.file_format_data == 'tif':
+
+                if self.file_source_data == 'moloc_15':
+
+                    if self.var_dims_data == 'var2d':
+
+                        if self.var_type_data == 'accumulated_classic':
+                            file_data_list = self.file_data_list
+                        else:
+                            log_stream.error(' ----> Get data ... FAILED! FILE SOURCE TYPE NOT ALLOWED!')
+                            raise NotImplementedError('NWP WRF type datasets not implemented yet')
+
+                        [var_data_def, var_time_def,
+                         var_geox, var_geoy] = read_data_moloc(file_data_list, file_time_data)
+
+                    elif self.var_dims_data == 'var3d':
+                        log_stream.error(' ----> Get data ... FAILED! FILE SOURCE DIMS NOT ALLOWED!')
+                        raise NotImplementedError('NWP MOLOC 3D dimensions datasets not implemented yet')
+                    else:
+                        log_stream.error(' ----> Get data ... FAILED! FILE SOURCE DIMS NOT ALLOWED!')
+                        raise NotImplementedError('NWP MOLOC case dimension datasets not implemented yet')
+
             elif self.file_format_data == 'netcdf':
 
                 if self.file_source_data == 'wrf':
 
                     if self.var_dims_data == 'var2d':
 
-                        if self.var_type_data == 'accumulated':
+                        if self.var_type_data == 'accumulated_from_first_step':
                             file_data_list = [self.file_data_first] + self.file_data_list
-                        elif self.var_type_data == 'instantaneous':
+                        elif self.var_type_data == 'accumulated_classic':
                             file_data_list = self.file_data_list
                         else:
                             log_stream.error(' ----> Get data ... FAILED! FILE SOURCE TYPE NOT ALLOWED!')
@@ -462,7 +487,7 @@ class RFarmData:
                 if self.file_source_data == 'expert_forecast':
                     if self.var_dims_data == 'var1d':
 
-                        if self.var_type_data == 'instantaneous':
+                        if self.var_type_data == 'accumulated_over_domain':
                             file_data_list = self.file_data_list
                         else:
                             log_stream.error(' ----> Get data ... FAILED! FILE SOURCE TYPE NOT ALLOWED!')
@@ -495,7 +520,7 @@ class RFarmData:
                 if self.file_source_data == 'expert_forecast':
                     if self.var_dims_data == 'var1d':
 
-                        if self.var_type_data == 'instantaneous':
+                        if self.var_type_data == 'accumulated_over_domain':
                             file_data_list = self.file_data_list
                         else:
                             log_stream.error(' ----> Get data ... FAILED! FILE SOURCE TYPE NOT ALLOWED!')

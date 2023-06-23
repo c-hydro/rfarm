@@ -2,6 +2,12 @@
 Changelog
 =========
 
+Version 4.4.1 [2023-06-23]
+**************************
+APP: **RFARM_Model_RUN_Manager.py**
+	- Add functions for the moloc15 "nwp" mode
+
+
 Version 4.4.0 [2023-05-26]
 **************************
 APP: **RFARM_Model_RUN_Manager.py**

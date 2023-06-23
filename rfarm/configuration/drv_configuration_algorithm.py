@@ -178,6 +178,10 @@ class DriverAlgorithm:
     def set_algorithm_default(algorithm_settings):
         if 'algorithm_mode' not in list(algorithm_settings['algorithm']['ancillary'].keys()):
             algorithm_settings['algorithm']['ancillary']['algorithm_mode'] = 'exec_nwp'
+        if 'reference_dim' not in list(algorithm_settings['algorithm']['ancillary'].keys()):
+            algorithm_settings['algorithm']['ancillary']['reference_dim'] = 'domain'
+        if 'reference_step' not in list(algorithm_settings['algorithm']['ancillary'].keys()):
+            algorithm_settings['algorithm']['ancillary']['reference_step'] = None
         return algorithm_settings
     # -------------------------------------------------------------------------------------
 

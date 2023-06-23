@@ -1,8 +1,8 @@
 """
 RFarm Model - Run Manager
 
-__date__ = '20230526'
-__version__ = '4.4.0'
+__date__ = '20230623'
+__version__ = '4.4.1'
 __author__ = 'Nicola Rebora           (nicola.rebora@cimafoundation.org)',
              'Fabio Delogu            (fabio.delogu@cimafoundation.org'),
              'Simone Gabellani        (simone.gabellani@cimafoundation.org)',
@@ -14,6 +14,7 @@ General command line:
 python3 RFARM_Model_RUN_Manager.py -settings_file configuration.json -time "YYYY-MM-DD HH:MM"
 
 Version(s):
+20230623 (4.4.1) --> RainFarm package for Liguria operational chain - nwp moloc;
 20230526 (4.4.0) --> RainFarm package for Liguria operational chain - expert forecast; add expert forecast converter; fix bugs
 20221219 (4.3.0) --> RainFarm package (refactor from hyde previous versions); fix bugs
 20210503 (4.0.3) --> Add gfs025 routines
@@ -50,8 +51,8 @@ log_stream = logging.getLogger(logger_name)
 # Algorithm information
 alg_project = 'RFarm'
 alg_name = 'Run Manager'
-alg_version = '4.4.0'
-alg_release = '2023-05-26'
+alg_version = '4.4.1'
+alg_release = '2023-06-23'
 alg_type = 'Model'
 # Algorithm parameter(s)
 time_format = '%Y-%m-%d %H:%M'
@@ -140,7 +141,9 @@ def main():
             file_ancillary_out_updating=data_settings['algorithm']['flags']['cleaning_dynamic_ancillary_out'],
             file_out_updating=data_settings['algorithm']['flags']['cleaning_dynamic_out'],
             file_out_zipping=data_settings['algorithm']['flags']['zipping_dynamic_out'],
-            file_domain_name=data_settings['algorithm']['ancillary']['domain'], file_dim_type='domain',
+            file_domain_name=data_settings['algorithm']['ancillary']['domain'],
+            file_reference_dim=data_settings['algorithm']['ancillary']['reference_dim'],
+            file_reference_step=data_settings['algorithm']['ancillary']['reference_step'],
             file_write_engine=data_settings['algorithm']['ancillary']['write_engine'],
             tag_model_algorithm=data_settings['algorithm']['ancillary']['algorithm_mode']
         )

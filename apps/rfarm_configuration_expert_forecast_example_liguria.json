@@ -26,7 +26,7 @@
       "title": "RFarm Model",
       "web-site": "",
       "source": "Python library developed by CIMA Research Foundation",
-      "history": "4.4.0 [20230526]",
+      "history": "4.4.1 [20230623]",
       "project-info": "Rainfarm Library",
       "algorithm": "Processing tool developed by CIMA Research Foundation"
     },
@@ -111,14 +111,6 @@
     "temp": {
         "filename": null,
         "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_liguria/tmp/"
-    },
-    "library": {
-      "filename": "",
-      "folder": ""
-    },
-    "bin": {
-      "filename": "",
-      "folder": ""
     }
   },
   "time": {
@@ -131,7 +123,7 @@
     "input": {
       "rain_data": {
         "id": {
-          "var_type": ["var1d", "instantaneous"],
+          "var_type": ["var1d", "accumulated_over_domain"],
           "var_source": "expert_forecast",
           "var_format": "json",
           "var_name": "slopes",
@@ -154,7 +146,7 @@
     "outcome": {
       "rain_data":{
         "id": {
-          "var_type": ["var3d", "accumulated"],
+          "var_type": ["var3d", "accumulated_classic"],
           "var_source": null,
           "var_format": "netcdf",
           "var_name": "Rain",

@@ -17,7 +17,7 @@
       "title": "RFarm Model",
       "web-site": "",
       "source": "Python library developed by CIMA Research Foundation",
-      "history": "4.4.0 [20230526]",
+      "history": "4.4.1 [20230623]",
       "project-info": "Rainfarm Library",
       "algorithm": "Processing tool developed by CIMA Research Foundation"
     },
@@ -117,7 +117,7 @@
     "input": {
       "rain_data": {
         "id": {
-          "var_type": ["var3d", "inst"],
+          "var_type": ["var3d", "accumulated_classic"],
           "var_source": "gfs025",
           "var_format": "netcdf",
           "var_name": "Total Precipitation",
@@ -140,7 +140,7 @@
     "outcome": {
       "rain_data":{
         "id": {
-          "var_type": ["var3d", "inst"],
+          "var_type": ["var3d", "accumulated_classic"],
           "var_source": null,
           "var_format": "netcdf",
           "var_name": "Rain",

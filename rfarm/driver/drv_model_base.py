@@ -130,7 +130,8 @@ class ModelRunner:
                  file_dict_in=None, file_dict_out=None,
                  file_ancillary_in_updating=True, file_ancillary_out_updating=None,
                  file_out_updating=None, file_out_zipping=False, file_ext_zipping='.gz',
-                 file_write_engine='netcdf4', file_domain_name='regional_domain', file_dim_type='time',
+                 file_write_engine='netcdf4', file_domain_name='regional_domain',
+                 file_reference_dim='time', file_reference_step=None,
                  tag_folder_name='folder', tag_file_name='filename',
                  tag_terrain_data='terrain_data', tag_alert_area_data='alert_area_data',
                  tag_model_algorithm='exec_nwp'):
@@ -201,19 +202,21 @@ class ModelRunner:
             log_stream.error(' ===> Domain name format not permitted')
             raise NotImplementedError('Case not implemented yet')
 
-        self.file_dim_type = file_dim_type
+        self.file_reference_dim = file_reference_dim
+        self.file_reference_step = file_reference_step
 
         # Data input file
         if file_in is not None:
 
-            if self.file_dim_type == 'time':
-                model_tags_in_values = {'datetime_input': self.time_step, 'sub_path_time': self.time_step}
+            if self.file_reference_dim == 'time':
+                model_tags_in_values = {'datetime_input': self.time_step, 'sub_path_time': self.time_step,
+                                        'timestep_input': 1}
 
                 file_in_raw = fill_tags2string(file_in, self.model_tags_template, model_tags_in_values)
                 self.folder_in_raw, self.filename_in_raw = os.path.split(file_in_raw)
-            elif self.file_dim_type == 'domain':
+            elif self.file_reference_dim == 'domain':
                 model_tags_in_values = {'datetime_input': self.time_step, 'sub_path_time': self.time_step,
-                                        'domain': self.var_domain_name[0]}
+                                        'domain': self.var_domain_name[0], 'timestep_input': 1}
 
                 file_in_raw = fill_tags2string(file_in, self.model_tags_template, model_tags_in_values)
                 self.folder_in_raw, self.filename_in_raw = os.path.split(file_in_raw)
@@ -221,18 +224,45 @@ class ModelRunner:
                 log_stream.error(' ===> File dimensions type is not allowed')
                 raise NotImplementedError('Case not implemented yet')
 
-            if self.file_dim_type == 'time':
-                self.folder_in_list = []
-                self.filename_in_list = []
-                for time_iter in self.time_range:
-                    model_tags_list_values = {'datetime_input': time_iter, 'sub_path_time': self.time_step}
+            if self.file_reference_dim == 'time':
+                self.folder_in_list, self.filename_in_list = [], []
+                reference_id = None
+                for time_id, time_step in enumerate(self.time_range):
+
+                    if reference_id is None:
+                        if time_step.hour == 1:
+                            reference_id = 1
+                        elif time_step.hour == 0:
+                            reference_id = 0
+                        else:
+                            log_stream.error(' ===> Reference step "' + str(time_iter.hour) +
+                                             '" is not supported')
+                            raise NotImplementedError('Case not implemented yet')
+
+                    if self.file_reference_step == 'first':
+                        reference_time = self.time_range[0]
+                    elif self.file_reference_step is None:
+                        reference_time = deepcopy(time_step)
+                    else:
+                        log_stream.error(' ===> Reference time  "' + str(self.file_reference_step) +
+                                         '" for "file_reference_dim == time" is not supported')
+                        raise NotImplementedError('Case not implemented yet')
+
+                    model_tags_list_values = {'datetime_input': reference_time, 'sub_path_time': self.time_step,
+                                              'timestep_input': time_id + reference_id}
                     file_in_list = fill_tags2string(file_in, self.model_tags_template, model_tags_list_values)
                     folder_in_list, filename_in_list = os.path.split(file_in_list)
                     self.folder_in_list.append(folder_in_list)
                     self.filename_in_list.append(filename_in_list)
-            elif self.file_dim_type == 'domain':
-                self.folder_in_list = []
-                self.filename_in_list = []
+
+            elif self.file_reference_dim == 'domain':
+
+                if self.file_reference_step is not None:
+                    log_stream.error(' ===> Reference time  "' + str(self.file_reference_step) +
+                                     '" for "file_reference_dim == domain" is not supported')
+                    raise NotImplementedError('Case not implemented yet')
+
+                self.folder_in_list, self.filename_in_list = [], []
                 for domain_iter in self.var_domain_name:
                     model_tags_list_values = {'datetime_input': self.time_step, 'sub_path_time': self.time_step,
                                               'domain': domain_iter}
@@ -240,6 +270,7 @@ class ModelRunner:
                     folder_in_list, filename_in_list = os.path.split(file_in_list)
                     self.folder_in_list.append(folder_in_list)
                     self.filename_in_list.append(filename_in_list)
+
             else:
                 log_stream.error(' ===> File dimensions type is not allowed')
                 raise NotImplementedError('Case not implemented yet')
