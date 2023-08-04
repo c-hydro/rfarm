@@ -141,7 +141,8 @@ def agg_xyt(zi, nax, nay, nat):
     nat = int(nat)
 
     nx, ny, nt = zi.shape
-    if (nay == nax) and (nat == nt):
+    # if (nay == nax) and (nat == nt):
+    if 1 == 2: # esclusione codice per evitare distinzione domini quadrati e rettangolari (da togliere)
         sf = nx/nax
         xa = np.squeeze(np.nanmean(np.reshape(zi, (int(sf), int(nx*ny*nt/sf)),
                                               order='F'), 0))

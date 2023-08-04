@@ -1,9 +1,9 @@
 {
   "algorithm":{
     "flags": {
-      "cleaning_static_data": false,
-      "cleaning_dynamic_ancillary_in": false,
-      "cleaning_dynamic_ancillary_out": false,
+      "cleaning_static_data": true,
+      "cleaning_dynamic_ancillary_in": true,
+      "cleaning_dynamic_ancillary_out": true,
       "cleaning_dynamic_out": true,
       "cleaning_dynamic_tmp": true,
       "zipping_dynamic_out": false
@@ -27,8 +27,8 @@
     },
     "parameters": {
       "ensemble": {"start": 1, "end": 2},
-      "ratio_s": 4,
-      "ratio_t": 3,
+      "ratio_s": 2,
+      "ratio_t": 1,
       "slope_s": null,
       "slope_t": null,
       "cs_sf": 4,
@@ -43,7 +43,8 @@
     "static": {
       "land": {
         "terrain_data": {
-          "filename": "maschera_2000_aa.txt",
+          "__comment__" : "maschera_2000_aa.txt, maschera_2000_6aa_ok.txt",
+          "filename": "maschera_2000_6aa_ok.txt",
           "folder": "/home/fabio/Desktop/RFarm_Workspace/rfarm-ws/opchain_liguria/data_static/gridded/"
         },
         "grid_data": {

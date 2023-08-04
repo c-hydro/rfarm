@@ -17,7 +17,7 @@ from copy import deepcopy
 import numpy as np
 import pandas as pd
 
-from rfarm.settings.lib_conventions import oVarConventions as var_def_conventions  # DA RIVEDERE
+from rfarm.settings.lib_conventions import oVarConventions as var_def_conventions  # FX DA RIVEDERE
 from rfarm.io.lib_io_generic_gzip import zip_filename
 
 from rfarm.settings.lib_args import logger_name
@@ -32,7 +32,6 @@ from rfarm.io.lib_io_src_grib import adjust_data_lami_2i, adjust_data_ecmwf_0100
 from rfarm.io.lib_io_src_netcdf import read_data_wrf, read_data_gfs_025
 from rfarm.io.lib_io_src_netcdf import convert_data_wrf, convert_time_wrf
 from rfarm.io.lib_io_src_tiff import read_data_moloc
-from rfarm.io.lib_io_src_tiff import convert_data_moloc
 
 from rfarm.io.lib_io_src_json import read_data_expert_forecast, configure_data_expert_forecast
 

@@ -554,6 +554,13 @@ class RFarmModel:
 
                     # get domain idx
                     subdomain_idx = np.argwhere(subdomain_mask.ravel() == area_id)
+                    if subdomain_idx.ndim == 2:
+                        subdomain_idx = subdomain_idx[:, 0]
+                    if subdomain_idx.size == 0:
+                        logging.error(' ===> Domain "' + area_tag + '" with ID "' + str(area_id) +
+                                      '" is not defined in the domain mask file. The domain indexes are empty.')
+                        raise RuntimeError('Check the domains file for the domain and id availability')
+
                     subdomain_cell = np.argwhere(subdomain_mask == area_id)
                     subdomain_cell_x, subdomain_cell_y = subdomain_cell[:, 0], subdomain_cell[:, 1]
 
