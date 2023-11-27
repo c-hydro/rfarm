@@ -60,6 +60,16 @@ def exec_nwp(X, xscale, tscale, cssf, ctsf,
     alfa = 1
     # X instantaneous rain data
     nx, ny, nt = X.shape
+
+    #Inserito da Francesco 19/09/2023
+    #Removes NAN values
+    X[np.isnan(X)]=0.0
+    '''
+    plt.figure(1)
+    plt.imshow(np.nansum(X,2), interpolation='none')
+    plt.colorbar()
+    plt.show()
+    '''
     if cssf == 1 and ctsf == 1:
         pa = X
     else:
@@ -88,7 +98,7 @@ def exec_nwp(X, xscale, tscale, cssf, ctsf,
         sx, sy, st = lib_core_fx.fitallslopes(
             fxp, fyp, ftp,
             np.arange(kmin, kmax),
-            np.arange(wmin, wmax))
+            np.arange(wmin, wmax),log_stream)
 
         # INIT: prepare f field for metagauss
         # np.random.rand('state',sum(100*clock))  ##ok<RAND> #

@@ -2,10 +2,18 @@
 Changelog
 =========
 
+Version 4.4.2 [2023-11-27]
+**************************
+APP: **RFARM_Model_RUN_Manager.py**
+	- Add functions to manage and use different sources in "nwp" mode
+	- Fix methods to organize disaggregation domain with a buffer zone (to extend the starting grid)
+	- Fix methods to manage nans or zeros in the Fourier transform
+
+
 Version 4.4.1 [2023-06-23]
 **************************
 APP: **RFARM_Model_RUN_Manager.py**
-	- Add functions for the moloc15 "nwp" mode
+	- Add functions to manage different sources in "nwp" mode
 
 
 Version 4.4.0 [2023-05-26]

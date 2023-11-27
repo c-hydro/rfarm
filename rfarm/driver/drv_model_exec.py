@@ -69,6 +69,7 @@ class RFarmModel:
     lons_ref, lats_ref = None, None
 
     lons_rf, lats_rf, index_rf = None, None, None
+    lons_orig, lats_orig =None, None #29/09/2023
 
     ll_lon_rf, ll_lat_rf, i_min_rf, i_max_rf, j_min_rf, j_max_rf = None, None, None, None, None, None
     lon_min_rf, lon_max_rf, lat_min_rf, lat_max_rf = None, None, None, None
@@ -158,6 +159,10 @@ class RFarmModel:
     # -------------------------------------------------------------------------------------
     # Method to configure model grid(s)
     def configure_grid(self, lons_in, lats_in, lons_ref, lats_ref, res_lon_ref, res_lat_ref, domain_extension=0):
+
+
+        self.lons_orig = deepcopy(lons_ref) #29/09/2023 Griglia originale
+        self.lats_orig = deepcopy(lats_ref)
 
         # method to extend rainfarm model grid
         self.lons_ref, self.lats_ref = extend_grid(lons_in, lats_in,
@@ -554,13 +559,6 @@ class RFarmModel:
 
                     # get domain idx
                     subdomain_idx = np.argwhere(subdomain_mask.ravel() == area_id)
-                    if subdomain_idx.ndim == 2:
-                        subdomain_idx = subdomain_idx[:, 0]
-                    if subdomain_idx.size == 0:
-                        logging.error(' ===> Domain "' + area_tag + '" with ID "' + str(area_id) +
-                                      '" is not defined in the domain mask file. The domain indexes are empty.')
-                        raise RuntimeError('Check the domains file for the domain and id availability')
-
                     subdomain_cell = np.argwhere(subdomain_mask == area_id)
                     subdomain_cell_x, subdomain_cell_y = subdomain_cell[:, 0], subdomain_cell[:, 1]
 
@@ -796,7 +794,7 @@ class RFarmModel:
                 save_result_expert_forecast(
                     ensemble_filename, var_name=ensemble_var, var_data_in=ensemble_rf_common,
                     var_time=info_common['time_period'],
-                    var_geo_x=self.lons_ref, var_geo_y=self.lats_ref)
+                    var_geo_x=self.lons_orig, var_geo_y=self.lats_orig)
 
             elif self.model_algorithm == 'exec_nwp':
 
@@ -804,8 +802,9 @@ class RFarmModel:
                 save_result_nwp(
                     ensemble_filename, ensemble_var, ensemble_rf_common,
                     self.lons_rf, self.lats_rf, self.time_steps_rf,
-                    self.lons_ref, self.lats_ref, self.time_steps_ref,
-                    geoindex_in=self.index_rf)
+                    self.lons_orig, self.lats_orig, self.time_steps_ref, #Francesco 29/09/2023 griglia originale
+                    #geoindex_in=self.index_rf) #Commentato Francesco 29/09/2023 per gestire allargamento griglia
+                    geoindex_in = None) #Inserito Francesco 29/09/2023 per gestire allargamento griglia
 
             # info ensemble end
             log_stream.info(' ----> Compute ensemble ' + str(ensemble_n) + ' ... DONE')

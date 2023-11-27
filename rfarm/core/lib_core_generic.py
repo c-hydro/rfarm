@@ -168,7 +168,7 @@ def extend_grid(a2dGeoX_IN, a2dGeoY_IN,
 
         # -------------------------------------------------------------------------------------
         # Convert Km to decimal degree
-        dGeoDeg_EXT = convertKm2Deg(dGeoKm_EXT)
+        dGeoDeg_EXT = convert_km2deg(dGeoKm_EXT)
         # -------------------------------------------------------------------------------------
 
         # -------------------------------------------------------------------------------------
@@ -312,7 +312,8 @@ def compute_grid(a2dGeoX_IN, a2dGeoY_IN,
         iIMax_REF, iJMin_REF = find_closest_idx(a2dGeoX_IN, a2dGeoY_IN, dGeoXMin_REF, dGeoYMin_REF)
         # Upper Right Corner
         iIMin_REF, iJMax_REF = find_closest_idx(a2dGeoX_IN, a2dGeoY_IN, dGeoXMax_REF, dGeoYMax_REF)
-        
+
+
         # Check corner(s)
         if a2dGeoX_IN[iIMax_REF, iJMin_REF] > dGeoXMin_REF:
             iJMin_REF = iJMin_REF - 1
@@ -654,6 +655,10 @@ def search_grid_index(iIMax_REF, iJMin_REF, iRows_REF, iCols_REF, iNPixels, iRat
     else:
         pass
     '''
+
+    iDeltaI = (iIMax_RF - iIMin_RF)
+    iDeltaJ = (iJMax_RF - iJMin_RF)
+
     # Info
     log_stream.info(' -------> Grid RF Index -- Final Values -- IMin: ' + str(iIMin_RF) + ' IMax: ' + str(iIMax_RF) +
                     ' JMin: ' + str(iJMin_RF) + ' JMax: ' + str(iJMax_RF))
@@ -782,6 +787,9 @@ def save_result_nwp(filename, varname,
                 data_in, geox_in, geoy_in, time_in,
                 geox_out, geoy_out, time_out,
                 geoindex_in=None):
+    #Francesco 29/09/2023 per gestire buffer (ricalcola indici su griglia dem originale)
+    if (geoindex_in is  None):
+        geoindex_in=lib_regrid.compute_grid_index(geox_in, geoy_in, geox_out, geoy_out, interp_method='nearest')
 
     # -------------------------------------------------------------------------------------
     # organize time information
@@ -849,7 +857,7 @@ def save_result_nwp(filename, varname,
         if (data_step.shape[0] != geox_out.shape[0]) or (data_step.shape[1] != geoy_out.shape[1]):
             # dimensions between data_in and data_out are different
             if geoindex_in is None:
-                data_regrid = lib_regrid.gridData(data_step, geox_in, geoy_in, geox_out, geoy_out)
+                data_regrid = lib_regrid.compute_grid_data(data_step, geox_in, geoy_in, geox_out, geoy_out)
             else:
                 data_indexed = data_step.ravel()[geoindex_in.ravel()]
                 data_regrid = np.reshape(data_indexed, [geox_out.shape[0], geoy_out.shape[1]])

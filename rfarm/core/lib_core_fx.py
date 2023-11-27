@@ -17,7 +17,7 @@ from __future__ import division
 import numpy as np
 import numpy.fft as fft
 
-# import matplotlib.pylab as plt
+import matplotlib.pylab as plt
 #######################################################################################
 
 
@@ -30,6 +30,9 @@ def fft3d(z):
     '''Calcola i parametri di slope'''
     
     ns, ns, nt = z.shape
+    #Check values, francesco 19/09/2023
+    z[z<0.0]=0.0
+    z[np.isnan(z)]=0.0
 
     zf = np.abs(fft.fftn(z)/(ns*ns*nt))**2
 
@@ -50,10 +53,11 @@ def fft3d(z):
     #oMat = sio.loadmat('fs.mat')
     
     #fs = oMat['fs']
-    
-    #plt.figure(1)
-    #plt.imshow(fs, interpolation='none'); plt.colorbar()
-    #plt.show()
+    '''
+    plt.figure(1)
+    plt.imshow(np.nansum(z,2), interpolation='none'); plt.colorbar()
+    plt.show()
+    '''
 
     nn = np.zeros((ns, 1))
     fx = np.zeros((ns, 1))
@@ -103,7 +107,7 @@ def fft3d(z):
     return fx, fy, ft
 
 
-def fitallslopes(fx, fy, ft, xr, tr):
+def fitallslopes(fx, fy, ft, xr, tr,log_stream):
     '''
     '''    
     #ns = len(fx)
@@ -114,6 +118,14 @@ def fitallslopes(fx, fy, ft, xr, tr):
     st = fitslope(ft, tr)
     sx = np.abs(sx)
     st = np.abs(st)
+    #Check sui valori nan introdotto da Francesco 19/09/2023
+    if(np.isnan(st) == True):
+        # info spectral slopes
+        log_stream.info(' -------> Warning Temporal Slope:  estimated with standard value')
+        st=1.4
+    if (np.isnan(sx) == True):
+        log_stream.info(' -------> Warning Spatial Slope:  estimated with standard value')
+        sx = 2.4
     sy = np.abs(sy)
     #    sx=(sx+sy)*0.5
     sx = sx-1
@@ -141,8 +153,9 @@ def agg_xyt(zi, nax, nay, nat):
     nat = int(nat)
 
     nx, ny, nt = zi.shape
-    # if (nay == nax) and (nat == nt):
-    if 1 == 2: # esclusione codice per evitare distinzione domini quadrati e rettangolari (da togliere)
+    #If Eliminato il 2/8/2023 non utile distinguere matrici quadrate e non
+    if(1==2):
+    #if (nay == nax) and (nat == nt):
         sf = nx/nax
         xa = np.squeeze(np.nanmean(np.reshape(zi, (int(sf), int(nx*ny*nt/sf)),
                                               order='F'), 0))
