@@ -165,6 +165,8 @@ class ModelRunner:
                 self.model_parameters['rain_max_thr'] = float(150)
             else:
                 self.model_parameters['rain_max_thr'] = float(self.model_parameters['rain_max_thr'])
+        else:
+            self.model_parameters['rain_max_thr'] = None
 
         folder_name_in = self.file_dict_in[self.tag_folder_name]
         file_name_in = self.file_dict_in[self.tag_file_name]

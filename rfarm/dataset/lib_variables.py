@@ -61,6 +61,41 @@ def compute_rain_ecmwf_0100(var_data_in, var_units='m', var_type='accumulated'):
 
 
 # -------------------------------------------------------------------------------------
+# Method to compute icon-2i rain
+def compute_rain_icon_2i(var_data_in, var_units='mm', var_type='accumulated'):
+
+    if (var_units == 'kg m**-2') or (var_units == 'Kg m**-2'):
+        var_units = 'mm'
+
+    if var_units == 'm':
+        var_scale_factor = 1000
+    elif var_units == 'mm':
+        var_scale_factor = 1
+    else:
+        log_stream.error(' ===> Rain components units are not allowed! Check your data!')
+        raise IOError('Selected units are not allowed!')
+
+    # Check attributes
+    if not (var_units == 'mm') and not (var_units == 'm'):
+        log_stream.error(' ===> Rain components units are not allowed! Check your data!')
+        raise IOError('Data units is not allowed!')
+    if not (var_type == 'accum') and not (var_type == 'accumulated'):
+        log_stream.error(' ===> Rain components allowed only in accumulated format! Check your data!')
+        raise IOError('Data type is not allowed!')
+
+    var_shape_in = var_data_in.shape
+    var_data_out = np.zeros([var_shape_in[0], var_shape_in[1], var_shape_in[2]])
+    var_data_out[:, :, :] = np.nan
+    for var_step in range(0, var_shape_in[2]):
+        var_data_step = var_data_in[:, :, var_step]
+        var_data_step = var_data_step / var_scale_factor
+        var_data_out[:, :, var_step] = var_data_step
+
+    return var_data_out
+# -------------------------------------------------------------------------------------
+
+
+# -------------------------------------------------------------------------------------
 # Method to compute lami-2i rain
 def compute_rain_lami_2i(var_data_in, var_units='mm', var_type='accumulated'):
 
@@ -100,9 +135,7 @@ def compute_rain_lami_2i(var_data_in, var_units='mm', var_type='accumulated'):
 def compute_rain_moloc(var_dset, var_name,
                        var_time=None, var_geo_x=None, var_geo_y=None,
                        var_units=None, var_step_type=None):
-
-    print('ciao')
-
+    pass
 # -------------------------------------------------------------------------------------
 
 

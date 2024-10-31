@@ -3,8 +3,8 @@ Library Features:
 
 Name:          drv_model_io
 Author(s):     Fabio Delogu (fabio.delogu@cimafoundation.org)
-Date:          '20200503'
-Version:       '1.1.0'
+Date:          '20241031'
+Version:       '1.2.0'
 """
 #################################################################################
 # Library
@@ -22,13 +22,14 @@ from rfarm.io.lib_io_generic_gzip import zip_filename
 
 from rfarm.settings.lib_args import logger_name
 
-from rfarm.dataset.lib_variables import compute_rain_lami_2i, compute_rain_ecmwf_0100
+from rfarm.dataset.lib_variables import compute_rain_lami_2i, compute_rain_icon_2i, compute_rain_ecmwf_0100
 
 from rfarm.io.lib_io_generic_fx import create_darray_3d, write_obj, read_obj
 from rfarm.io.lib_io_dst_netcdf import create_dset_nc, write_dset_nc
 from rfarm.io.lib_io_dst_binary import write_dset_binary
-from rfarm.io.lib_io_src_grib import read_data_lami_2i, read_data_ecmwf_0100
-from rfarm.io.lib_io_src_grib import adjust_data_lami_2i, adjust_data_ecmwf_0100
+from rfarm.io.lib_io_src_grib_lami import read_data_lami_2i, adjust_data_lami_2i
+from rfarm.io.lib_io_src_grib_icon import read_data_icon_2i, adjust_data_icon_2i
+from rfarm.io.lib_io_src_grib_ecmwf import read_data_ecmwf_0100, adjust_data_ecmwf_0100
 from rfarm.io.lib_io_src_netcdf import read_data_wrf, read_data_gfs_025
 from rfarm.io.lib_io_src_netcdf import convert_data_wrf, convert_time_wrf
 from rfarm.io.lib_io_src_tiff import read_data_moloc
@@ -394,6 +395,25 @@ class RFarmData:
                     else:
                         log_stream.error(' ----> Get data ... FAILED! FILE SOURCE DIMS NOT ALLOWED!')
                         raise NotImplementedError('NWP lami case dimension datasets not implemented yet')
+
+                elif self.file_source_data == 'icon_2i':
+
+                    if self.var_dims_data == 'var2d':
+                        log_stream.error(' ----> Get data ... FAILED! FILE SOURCE DIMS NOT ALLOWED!')
+                        raise NotImplementedError('NWP icon 2D dimensions datasets not implemented yet')
+                    elif self.var_dims_data == 'var3d':
+
+                        [var_da, time_da, geox_obj, geoy_obj] = read_data_icon_2i(
+                            self.file_data_first, data_var=self.var_name_data)
+
+                        [var_data_raw, var_time_def, var_geox, var_geoy] = adjust_data_icon_2i(
+                            var_da, time_da, geox_obj, geoy_obj)
+
+                        var_data_def = compute_rain_icon_2i(var_data_raw)
+
+                    else:
+                        log_stream.error(' ----> Get data ... FAILED! FILE SOURCE DIMS NOT ALLOWED!')
+                        raise NotImplementedError('NWP icon case dimension datasets not implemented yet')
 
                 elif self.file_source_data == 'ecmwf0100':
 
