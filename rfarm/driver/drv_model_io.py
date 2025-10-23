@@ -174,7 +174,7 @@ class RFarmResult:
 
         # Var attributes
         var_attrs_dict = self.var_attrs_dict
-        var_freq_expected = self.var_freq
+        var_freq_expected = self.var_freq.lower()
 
         # Iterate over ensemble(s)
         for filename_id, (ensemble_name, filename_in, filename_out) in enumerate(

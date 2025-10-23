@@ -1,8 +1,8 @@
 """
 RFarm Model - Run Manager
 
-__date__ = '20241031'
-__version__ = '4.4.3'
+__date__ = '20251023'
+__version__ = '4.5.0'
 __author__ = 'Nicola Rebora           (nicola.rebora@cimafoundation.org)',
              'Fabio Delogu            (fabio.delogu@cimafoundation.org'),
              'Simone Gabellani        (simone.gabellani@cimafoundation.org)',
@@ -14,6 +14,7 @@ General command line:
 python3 RFARM_Model_RUN_Manager.py -settings_file configuration.json -time "YYYY-MM-DD HH:MM"
 
 Version(s):
+20251023 (4.5.0) --> RainFarm package for Marche operational chain - nwp ecmwf 1h/3h resolution;
 20241031 (4.4.3) --> RainFarm package for Marche operational chain - nwp icon;
 20231127 (4.4.2) --> RainFarm package add functions to manage different nwp models; fix bugs
 20230623 (4.4.1) --> RainFarm package for Liguria operational chain - nwp moloc;
@@ -53,8 +54,8 @@ log_stream = logging.getLogger(logger_name)
 # Algorithm information
 alg_project = 'RFarm'
 alg_name = 'Run Manager'
-alg_version = '4.4.2'
-alg_release = '2024-10-31'
+alg_version = '4.5.0'
+alg_release = '2025-10-23'
 alg_type = 'Model'
 # Algorithm parameter(s)
 time_format = '%Y-%m-%d %H:%M'
