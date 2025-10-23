@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# conda environments
+miniconda.sh
+conda/
+.conda/
+
+# datasets and outputs
+dset/
