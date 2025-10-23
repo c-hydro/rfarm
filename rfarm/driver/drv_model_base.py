@@ -96,7 +96,7 @@ class ModelTime:
                                    #freq=time_observed_frequency, inclusive=time_closed)
                                    freq=time_observed_frequency, closed=time_closed)
         except:
-            me_range = pd.date_range(start=time_start, end=time_end,
+            time_range = pd.date_range(start=time_start, end=time_end,
                                     freq=time_observed_frequency, inclusive=time_closed)
 
         time_range = time_range.sort_values(return_indexer=False, ascending=time_ascending)

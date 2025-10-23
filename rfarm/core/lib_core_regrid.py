@@ -4,13 +4,12 @@ Library Features:
 
 Name:          lib_core_regrid
 Author(s):     Mirko D'Andrea (mirko.dandrea@cimafoundation.org); Lorenzo Campo (lcampo@gmail.com)
-Date:          '20170530'
-Version:       '3.5.0'
+Date:          '20251023'
+Version:       '3.6.0'
 """
 # -------------------------------------------------------------------------------------
 # Libraries
 from scipy.interpolate import griddata
-from scipy import meshgrid
 import numpy as np
 # -------------------------------------------------------------------------------------
 
@@ -23,7 +22,9 @@ def compute_grid_index(geo_x_in, geo_y_in, geo_x_out, geo_y_out, interp_method='
     geo_idx_in = np.arange(0, geo_dim_in)
     geo_idx_out = griddata((geo_x_in.ravel(), geo_y_in.ravel()), geo_idx_in, (geo_x_out, geo_y_out),
                            method=interp_method)
-                            
+    # force to integer because needed by fancy indexing
+    geo_idx_out = geo_idx_out.astype(int)
+
     return geo_idx_out
 # -------------------------------------------------------------------------------------
 
@@ -108,7 +109,7 @@ def getReferencesAndWeights(X1, Y1, X2, Y2):
         YI = np.arange(J_min[i], J_max[i]+1, 1, dtype='int32')
         XI = np.arange(I_min[i], I_max[i]+1, 1, dtype='int32')
         
-        [J,I] = meshgrid(XI, YI)
+        [J,I] = np.meshgrid(XI, YI)
         
         If = I.ravel()
         Jf = J.ravel()

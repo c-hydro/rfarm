@@ -2,11 +2,16 @@
 Changelog
 =========
 
+Version 4.5.0 [2025-10-23]
+**************************
+APP: **RFARM_Model_RUN_Manager.py**
+	- Add functions to manage and use different sources in "nwp" mode (ecmwf-0100 1h/3h hours resolution)
+
 Version 4.4.3 [2024-10-31]
 **************************
 APP: **RFARM_Model_RUN_Manager.py**
 	- Add functions to manage and use different sources in "nwp" mode (icon-2i)
-	- Fix bugs related to not initilized conditions
+	- Fix bugs related to not initialized conditions
 
 
 Version 4.4.2 [2023-11-27]

@@ -787,9 +787,13 @@ def save_result_nwp(filename, varname,
                 data_in, geox_in, geoy_in, time_in,
                 geox_out, geoy_out, time_out,
                 geoindex_in=None):
-    #Francesco 29/09/2023 per gestire buffer (ricalcola indici su griglia dem originale)
-    if (geoindex_in is  None):
-        geoindex_in=lib_regrid.compute_grid_index(geox_in, geoy_in, geox_out, geoy_out, interp_method='nearest')
+
+    # -------------------------------------------------------------------------------------
+    # compute index for re-grid (if not provided)
+    # Francesco 29/09/2023 per gestire buffer (ricalcola indici su griglia dem originale)
+    if geoindex_in is None:
+        geoindex_in = lib_regrid.compute_grid_index(geox_in, geoy_in, geox_out, geoy_out, interp_method='nearest')
+    # -------------------------------------------------------------------------------------
 
     # -------------------------------------------------------------------------------------
     # organize time information
@@ -818,17 +822,17 @@ def save_result_nwp(filename, varname,
     time_len_out = list(set(time_len_out_list))
     time_ratio = list(set(time_ratio_list))
     if time_len_in.__len__() == 1:
-        time_len_in = time_len_in[0]
+        time_len_in = int(time_len_in[0])
     else:
         log_stream.error(' ===> The time length of input data is in unsupported format')
         assert NotImplemented('Case not implemented yet')
     if time_len_out.__len__() == 1:
-        time_len_out = time_len_out[0]
+        time_len_out = int(time_len_out[0])
     else:
         log_stream.error(' ===> The time length of output data is in unsupported format')
         assert NotImplemented('Case not implemented yet')
     if time_ratio.__len__() == 1:
-        time_ratio_agg = time_ratio[0]
+        time_ratio_agg = int(time_ratio[0])
     else:
         log_stream.error(' ===> The time ratio between input and output data is in unsupported format')
         assert NotImplemented('Case not implemented yet')
